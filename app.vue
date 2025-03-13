@@ -1,11 +1,14 @@
 <template>
-    <div>
-        <NuxtRouteAnnouncer />
-        <NuxtLayout>
-            <nav>
-                <NuxtLink to="/">Home</NuxtLink>
-            </nav>
-            <NuxtPage />
-        </NuxtLayout>
-    </div>
+  <NuxtLayout>
+    <v-app>
+      <NavBar />
+      <v-main>
+        <NuxtPage />
+      </v-main>
+    </v-app>
+  </NuxtLayout>
 </template>
+
+<script setup lang="ts">
+import NavBar from '~/components/NavBar.vue';
+</script>
