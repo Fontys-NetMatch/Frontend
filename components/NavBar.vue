@@ -22,8 +22,9 @@
   
   const navigationItems = [
     { label: 'Home', to: '/' },
-    { label: 'Login Page', to: '/auth/login' },
-    { label: 'Product Create', to: '/product/create' },
+    { label: 'Products', to: '/product/dashboard' },
+    { label: 'Quotations', to: '/quotations/dashboard'},
+    { label: 'Login Page', to: '/auth/login' }
   ];
   
   const signOut = () => {
