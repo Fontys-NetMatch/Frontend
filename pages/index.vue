@@ -1,3 +1,11 @@
+<script setup lang="ts">
+    import { useAuthStore } from "~/store/auth";
+
+    const authStore = useAuthStore()
+
+    console.log("temp", authStore.user);
+</script>
+
 <template>
     <UAlert
         icon="i-heroicons-command-line"

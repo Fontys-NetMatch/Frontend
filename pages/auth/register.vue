@@ -1,11 +1,9 @@
 <script setup lang="ts">
-
+import RegisterForm from "~/components/Auth/RegisterForm.vue";
 </script>
 
 <template>
-  <div>
-    <p>{{ "message" }}</p>
-  </div>
+    <RegisterForm />
 </template>
 
 <style scoped>
