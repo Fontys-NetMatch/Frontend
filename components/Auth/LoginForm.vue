@@ -1,8 +1,14 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
+import {ref, watchEffect} from 'vue'
     import { useAuthStore } from "~/store/auth";
 
-    const authStore = useAuthStore()
+    const authStore = useAuthStore();
+
+    watchEffect(() => {
+        if (authStore.jwtToken === undefined) {
+            navigateTo("/");
+        }
+    });
 
     let loading = ref(false);
     let email = ref("mail@example.com");

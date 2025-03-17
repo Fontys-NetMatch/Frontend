@@ -1,9 +1,11 @@
 <script setup lang="ts">
-    import { useAuthStore } from "~/store/auth";
+    definePageMeta({
+        middleware: 'auth',
+    });
 
-    const authStore = useAuthStore()
+    const event = useRequestEvent();
+    console.log(event);
 
-    console.log("temp", authStore.user);
 </script>
 
 <template>
