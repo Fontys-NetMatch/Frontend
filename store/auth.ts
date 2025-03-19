@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {useToastStore} from "~/store/toast";
-import User from "~/models/User";
+import User from "~/models/user";
 
 export const useAuthStore = defineStore('auth', () => {
     const config = useRuntimeConfig();

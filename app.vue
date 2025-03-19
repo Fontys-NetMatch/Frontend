@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import NavBar from '~/components/Layout/NavBar.vue';
+import NavBar from '~/components/layout/NavBar.vue';
 import 'vue3-toastify/dist/index.css'
 import Toast from "~/components/Toast.vue";
 </script>
