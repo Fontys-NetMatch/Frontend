@@ -48,6 +48,9 @@ import {ref, watchEffect} from 'vue'
                 loading.value = false;
                 if(!user) return;
                 navigateTo("/");
+            },
+            (error) => {
+                loading.value = false;
             }
         );
     }
