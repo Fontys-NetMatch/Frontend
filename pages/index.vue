@@ -1,3 +1,13 @@
+<script setup lang="ts">
+    definePageMeta({
+        middleware: 'auth',
+    });
+
+    const event = useRequestEvent();
+    console.log(event);
+
+</script>
+
 <template>
     <div class="page-container">
       <UAlert
