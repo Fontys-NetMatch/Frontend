@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+    import { ref } from 'vue'
     import { useAuthStore } from "~/store/auth";
 
     const authStore = useAuthStore();
-
-    watchEffect(() => {
-        if (authStore.jwtToken === undefined) {
-            navigateTo("/");
-        }
-    });
 
     let loading = ref(false);
     let email = ref("mail@example.com");
@@ -48,6 +42,9 @@ import {ref, watchEffect} from 'vue'
                 loading.value = false;
                 if(!user) return;
                 navigateTo("/");
+            },
+            (error) => {
+                loading.value = false;
             }
         );
     }

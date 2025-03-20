@@ -1,6 +1,9 @@
 import {defineStore} from 'pinia'
 import {useToastStore} from "~/store/toast";
-import User from "~/models/User";
+import User from "~/models/user";
+
+type SuccessCb = (user: User, token: string) => void;
+type ErrorCb = (error: any) => void;
 
 export const useAuthStore = defineStore('auth', () => {
     const config = useRuntimeConfig();
@@ -9,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
     const jwtToken = ref<string | undefined>(undefined)
     const user = ref<User | undefined>(undefined)
 
-    const login = (email: string, password: string, rememberMe: boolean, callback: any) => {
+    const login = (email: string, password: string, rememberMe: boolean, successCb: SuccessCb, errorCb: ErrorCb) => {
         let backendBaseUrl = config.public.backendBaseUrl;
         $fetch(backendBaseUrl + '/auth/login', {
             method: 'POST',
@@ -35,10 +38,11 @@ export const useAuthStore = defineStore('auth', () => {
             }else{
                 toast(res.message, 'error');
             }
-            callback(user.value, jwtToken.value);
+            successCb(user.value, jwtToken.value);
         }).catch(err => {
-            console.error(err);
             toast('An error occurred while logging in', 'error');
+            console.error(err);
+            errorCb(err);
         })
     }
 

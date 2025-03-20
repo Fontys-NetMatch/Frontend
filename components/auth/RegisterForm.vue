@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue';
+    import { ref } from 'vue';
     import { useToastStore } from '~/store/toast';
-import {useAuthStore} from "~/store/auth";
-
-    const authStore = useAuthStore();
-    watchEffect(() => {
-        if (authStore.jwtToken === undefined) {
-            navigateTo("/");
-        }
-    });
 
     const config = useRuntimeConfig();
     const { toast } = useToastStore();
