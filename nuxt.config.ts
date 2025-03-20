@@ -8,7 +8,6 @@ export default defineNuxtConfig({
         '@nuxt/image',
         '@nuxtjs/i18n',
         '@nuxt/icon',
-        'nuxt-auth-utils',
         '@pinia/nuxt',
         'pinia-plugin-persistedstate/nuxt',
     ],

@@ -2,10 +2,6 @@
     definePageMeta({
         middleware: 'auth',
     });
-
-    const event = useRequestEvent();
-    console.log(event);
-
 </script>
 
 <template>
