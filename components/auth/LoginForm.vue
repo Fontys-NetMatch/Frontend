@@ -53,7 +53,7 @@
 
 <template>
     <div class="flex justify-center align-content-center h-100">
-        <v-card class="mx-auto mb-10" max-width="400">
+        <v-card class="mx-auto mb-10" min-width="400">
             <v-sheet class="ma-4">
                 <v-form validate-on="submit lazy" @submit.prevent="submitForm">
                     <h1 class="text-center">Login</h1>
