@@ -1,37 +1,37 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-// Simulated profile data (replace with API call in a real app)
 const profile = ref({
   name: 'John Doe',
   email: 'john.doe@example.com',
-  avatar: 'https://randomuser.me/api/portraits/men/1.jpg'
+  avatar: "/assets/images/profile.jpg"
 });
+
 </script>
 
 <template>
   <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-  <div class="text-center">
+    <div class="text-center p-4 border rounded shadow bg-white">
       <!-- Avatar -->
       <img
           :src="profile.avatar"
           :alt="`${profile.name}'s avatar`"
-          class="mx-auto w-[200px] h-[200px] rounded-xl border-8"
-
+          class="mx-auto d-block mb-3 rounded-circle border border-dark"
+          style="width: 200px; height: 200px;"
       >
+
       <!-- Name -->
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">
+      <h1 class="h4 fw-bold text-dark mb-2">
         {{ profile.name }}
       </h1>
+
       <!-- Email -->
-      <p class="text-gray-600 mb-2">
+      <p class="text-muted">
         {{ profile.email }}
       </p>
     </div>
   </div>
 </template>
 
-
 <style scoped>
-
 </style>
