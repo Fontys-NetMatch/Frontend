@@ -4,13 +4,12 @@ export default defineNuxtConfig({
     ssr: false,
 
     modules: [
-      'vuetify-nuxt-module',
-      '@nuxt/image',
-      '@nuxtjs/i18n',
-      '@nuxt/icon',
-      '@pinia/nuxt',
-      'pinia-plugin-persistedstate/nuxt',
-      '@nuxtjs/tailwindcss',
+        'vuetify-nuxt-module',
+        '@nuxt/image',
+        '@nuxtjs/i18n',
+        '@nuxt/icon',
+        '@pinia/nuxt',
+        'pinia-plugin-persistedstate/nuxt',
     ],
 
     vuetify: {
@@ -47,6 +46,4 @@ export default defineNuxtConfig({
     },
 
     compatibilityDate: '2025-03-14',
-
-
 });
