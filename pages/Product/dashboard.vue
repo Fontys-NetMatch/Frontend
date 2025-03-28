@@ -6,7 +6,7 @@
         Producten
         <v-spacer></v-spacer>
         <!-- Knop naar de create-pagina -->
-        <v-btn color="primary" to="/products/create">Nieuw Product</v-btn>
+        <v-btn color="primary" to="/product/create">Nieuw Product</v-btn>
         <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
