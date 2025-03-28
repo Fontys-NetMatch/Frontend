@@ -3,10 +3,12 @@ import { ref } from 'vue';
 import { useToastStore } from '~/store/toast';
 import { rules } from '~/utils/userValidation';
 import { useI18n } from 'vue-i18n';
+import {useLocaleRoute} from "#i18n";
 
 const config = useRuntimeConfig();
 const { toast } = useToastStore();
 const { t } = useI18n();
+const localeRoute = useLocaleRoute()
 
 let loading = ref(false);
 let firstname = ref("");
@@ -129,7 +131,7 @@ async function submitForm(): Promise<void> {
           />
 
           <div class="mt-2 text-center">
-            <NuxtLink class="text-decoration-none" to="/auth/login">
+            <NuxtLink class="text-decoration-none" :to="localeRoute('/auth/login')">
               {{ t('LoginToAccount') }}
             </NuxtLink>
           </div>
