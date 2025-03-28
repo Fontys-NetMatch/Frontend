@@ -70,13 +70,13 @@
         <NuxtImg src="assets/images/profile.jpg" alt="Profile" width="40" height="40" class="rounded-circle profile-img" />
       </v-btn>
       <v-btn color="red" class="text-black font-weight-bold ml-3" variant="flat" @click="signOut">
-        Sign Out
+        {{ t('SignIn') }}
       </v-btn>
     </template>
 
     <template v-else>
       <v-btn color="red" class="text-black font-weight-bold ml-3" variant="flat" @click="signIn">
-        Sign In
+        {{ t('SignOut') }}
       </v-btn>
     </template>
   </v-app-bar>
@@ -86,10 +86,13 @@
 import { useNavbar } from '~/store/useNavbar';
 import { useAuthStore } from '~/store/auth';
 import { useLanguage } from '~/store/language'
+import { useI18n } from 'vue-i18n';
 
 const authStore = useAuthStore();
 const { navigationItems, signIn, signOut } = useNavbar();
 const { languages, selectedLanguage, changeLanguage } = useLanguage();
+const { t } = useI18n();
+
 </script>
 
 <style>
