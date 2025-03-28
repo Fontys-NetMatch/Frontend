@@ -1,3 +1,4 @@
 export default{
-    message: "Hello"
+    message: "Guttentag",
+    Test: "Dis is geine test"
 }

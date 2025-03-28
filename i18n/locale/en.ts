@@ -1,3 +1,4 @@
 export default{
-    message: "Hello"
+    message: "Hello",
+    Test: "this does work"
 }
