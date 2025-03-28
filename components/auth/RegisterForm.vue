@@ -7,6 +7,7 @@
 
     import { useI18n } from 'vue-i18n';
     const { t } = useI18n();
+    const localeRoute = useLocaleRoute()
 
     let loading = ref(false);
     let firstname = ref("");
@@ -140,7 +141,7 @@
                         color="primary"
                     ></v-btn>
                     <div class="mt-2 text-center">
-                        <NuxtLink class="text-decoration-none" to="/auth/login">
+                        <NuxtLink class="text-decoration-none" :to="localeRoute('auth-login')">
                           {{ t('LoginToAccount') }}
                         </NuxtLink>
                     </div>
