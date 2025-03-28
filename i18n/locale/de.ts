@@ -1,4 +1,12 @@
-export default{
-    message: "Guttentag",
-    Test: "Dis is geine test"
+export default {
+    EmailAddress: "E-Mail-Adresse",
+    Login: "Anmelden",
+    LoginToAccount: "Zum Konto anmelden",
+    Password: "Passwort",
+    PasswordConfirm: "Passwort bestätigen",
+    Phone: "Telefon",
+    Register: "Registrieren",
+    RememberMe: "Angemeldet bleiben",
+    Surname: "Nachname",
+    Firstname: "Vorname",
 }

@@ -1,4 +1,12 @@
 export default{
-    message: "Hello",
-    Test: "this does work"
+    EmailAddress: "Email address",
+    Login: "Login",
+    LoginToAccount: "Login to account",
+    Password: "Password",
+    PasswordConfirm: "Password confirm",
+    Phone: "Phone",
+    Register: "Register",
+    RememberMe: "Remember me",
+    Surname: "Surname",
+    Firstname: "First name",
 }
