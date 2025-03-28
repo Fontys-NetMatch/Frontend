@@ -1,150 +1,145 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
-    import { useToastStore } from '~/store/toast';
+import { ref } from 'vue';
+import { useToastStore } from '~/store/toast';
+import { rules } from '~/utils/userValidation';
+import {rule} from "postcss";
 
-    const config = useRuntimeConfig();
-    const { toast } = useToastStore();
+const config = useRuntimeConfig();
+const { toast } = useToastStore();
 
-    let loading = ref(false);
-    let firstname = ref("");
-    let surname = ref("");
-    let email = ref("");
-    let phone = ref("");
-    let password = ref("");
-    let passwordConfirm = ref("");
-    let showPassword = ref(false);
+// Form values
+const firstname = ref('');
+const surname = ref('');
+const email = ref('');
+const phone = ref('');
+const password = ref('');
+const passwordConfirm = ref('');
+const showPassword = ref(false);
+const loading = ref(false);
 
-    let rules = {
-        required: value => !!value || 'Required.',
-        email: v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-        passwordMatch: () => password.value === passwordConfirm.value || 'Passwords do not match',
-    };
+// Validate check
+function validateFormSubmit(): boolean {
+  let valid = true;
 
-    function validateFormSubmit(): boolean {
-        let valid = true;
-        if(!rules.required(firstname.value)) {
-            valid = false;
-        }
-        if(!rules.required(surname.value)) {
-            valid = false;
-        }
-        if(!rules.required(email.value)) {
-            valid = false;
-        }
-        if(!rules.email(email.value)) {
-            valid = false;
-        }
-        if(!rules.required(password.value)) {
-            valid = false;
-        }
-        if(!rules.required(password.value)) {
-            valid = false;
-        }
-        if(password.value !== passwordConfirm.value) {
-            valid = false;
-        }
-        return valid;
+  if (rules.required(firstname.value) !== true) valid = false;
+  if (rules.required(surname.value) !== true) valid = false;
+  if (rules.required(email.value) !== true) valid = false;
+  if (rules.email(email.value) !== true) valid = false;
+  if (rules.required(password.value) !== true) valid = false;
+  if (rules.passwordStrength(password.value) !== true) valid = false;
+  if (rules.passwordLength(password.value) !== true) valid = false;
+  if (rules.required(passwordConfirm.value) !== true) valid = false;
+
+  const passwordMatchResult = rules.passwordMatch(() => password.value)(passwordConfirm.value);
+  if (passwordMatchResult !== true) valid = false;
+
+  return valid;
+}
+
+// Submit
+async function submitForm(): Promise<void> {
+  if (!validateFormSubmit()) return;
+
+  loading.value = true;
+
+  const backendBaseUrl = config.public.backendBaseUrl;
+
+  try {
+    const res = await $fetch(backendBaseUrl + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        firstname: firstname.value,
+        surname: surname.value,
+        email: email.value,
+        phone: phone.value,
+        password: password.value,
+      }
+    });
+
+    if (res.success) {
+      toast("Account created successfully");
+      navigateTo("/auth/login");
+    } else {
+      toast(res.message || 'Registration failed.', 'error');
     }
-
-    function submitForm(): void {
-        // Only block the request. Vuetify is handeling the messages
-        if(!validateFormSubmit()) return;
-
-        loading.value = true;
-
-        let backendBaseUrl = config.public.backendBaseUrl;
-        $fetch(backendBaseUrl + '/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: {
-                firstname: firstname.value,
-                surname: surname.value,
-                email: email.value,
-                phone: phone.value,
-                password: password.value
-            }
-        }).then(res => {
-            if(res.success){
-                toast("Account created successfully");
-                navigateTo("/auth/login");
-            }else{
-                toast(res.message, 'error');
-            }
-            loading.value = false;
-        });
-    }
-
+  } catch (error: any) {
+    toast('Something went wrong', 'error');
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
+
+
+
 <template>
-    <div class="flex justify-center align-content-center h-100">
-        <v-card class="mx-auto mb-10" max-width="400">
-            <v-sheet class="ma-4">
-                <v-form validate-on="submit lazy" @submit.prevent="submitForm">
-                    <h1 class="text-center">Register</h1>
-                    <v-row>
-                        <v-col>
-                            <v-text-field
-                                v-model="firstname"
-                                :rules="[rules.required]"
-                                label="Firstname*"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field
-                                v-model="surname"
-                                :rules="[rules.required]"
-                                label="Surname*"
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
+  <div class="flex justify-center align-content-center h-100">
+    <v-card class="mx-auto mb-10" max-width="400">
+      <v-sheet class="ma-4">
+        <v-form ref="formRef" validate-on="submit lazy" @submit.prevent="submitForm">
+          <h1 class="text-center">Register</h1>
+          <v-row>
+            <v-col>
+              <v-text-field
+                  v-model="firstname"
+                  :rules="[rules.required]"
+                  label="Firstname*"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                  v-model="surname"
+                  :rules="[rules.required]"
+                  label="Surname*"
+              ></v-text-field>
+            </v-col>
+          </v-row>
 
-                    <v-text-field
-                        v-model="email"
-                        :rules="[rules.required, rules.email]"
-                        label="Email Address*"
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="phone"
-                        label="Phone"
-                    ></v-text-field>
+          <v-text-field
+              v-model="email"
+              :rules="[rules.required, rules.email]"
+              label="Email Address*"
+          ></v-text-field>
+          <v-text-field
+              v-model="phone"
+              label="Phone"
+          ></v-text-field>
 
-                    <v-text-field
-                        class="mt-2"
-                        v-model="password"
-                        :rules="[rules.required]"
-                        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                        :type="showPassword ? 'text' : 'password'"
-                        @click:append="showPassword = !showPassword"
-                        label="Password*"
-                    ></v-text-field>
-                    <v-text-field
-                        class="mt-2"
-                        v-model="passwordConfirm"
-                        :rules="[rules.required, rules.passwordMatch]"
-                        :type="showPassword ? 'text' : 'password'"
-                        label="Password Confirm*"
-                    ></v-text-field>
+          <v-text-field
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="showPassword = !showPassword"
+              :rules="[rules.required, rules.passwordLength, rules.passwordStrength]"
+              label="Password*"
+          ></v-text-field>
+          <v-text-field
+              class="mt-2"
+              v-model="passwordConfirm"
+              :rules="[rules.required, rules.passwordMatch(() => password)]"
+              :type="showPassword ? 'text' : 'password'"
+              label="Password Confirm*"
+          ></v-text-field>
 
-                    <v-btn
-                        :loading="loading"
-                        class="mt-2"
-                        text="Register"
-                        type="submit"
-                        block
-                        color="primary"
-                    ></v-btn>
-                    <div class="mt-2 text-center">
-                        <NuxtLink class="text-decoration-none" to="/auth/login">
-                            Login to your account
-                        </NuxtLink>
-                    </div>
-                </v-form>
-            </v-sheet>
-        </v-card>
-    </div>
+          <v-btn
+              :loading="loading"
+              class="mt-2"
+              text="Register"
+              type="submit"
+              block
+              color="primary"
+          ></v-btn>
+          <div class="mt-2 text-center">
+            <NuxtLink class="text-decoration-none" to="/auth/login">
+              Login to your account
+            </NuxtLink>
+          </div>
+        </v-form>
+      </v-sheet>
+    </v-card>
+  </div>
 </template>
 
 <style scoped>
