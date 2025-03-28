@@ -107,7 +107,7 @@
                     <v-text-field
                         v-model="email"
                         :rules="[rules.required, rules.email]"
-                        :label="t('EmailAddress')"
+                        :label="t('EmailAddress') + '*'"
                     ></v-text-field>
                     <v-text-field
                         v-model="phone"
@@ -121,14 +121,14 @@
                         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="showPassword ? 'text' : 'password'"
                         @click:append="showPassword = !showPassword"
-                        :label="t('Password')"
+                        :label="t('Password') + '*'"
                     ></v-text-field>
                     <v-text-field
                         class="mt-2"
                         v-model="passwordConfirm"
                         :rules="[rules.required, rules.passwordMatch]"
                         :type="showPassword ? 'text' : 'password'"
-                        :label="t('PasswordConfirm')"
+                        :label="t('PasswordConfirm' + '*')"
                     ></v-text-field>
 
                     <v-btn
