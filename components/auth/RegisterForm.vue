@@ -141,7 +141,7 @@
                         color="primary"
                     ></v-btn>
                     <div class="mt-2 text-center">
-                        <NuxtLink class="text-decoration-none" :to="localeRoute('auth-login')">
+                        <NuxtLink class="text-decoration-none" :to="localeRoute('/auth/login')">
                           {{ t('LoginToAccount') }}
                         </NuxtLink>
                     </div>
