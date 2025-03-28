@@ -31,14 +31,12 @@ export default defineNuxtConfig({
 
     i18n: {
         locales: [
-            { code: 'en', name: 'English' },
-            { code: 'fr', name: 'Français' },
-            { code: 'nl', name: 'Nederlands' },
-            { code: 'de', name: 'Deutsch' }
+            {code: 'en', name: 'English'},
+            {code: 'fr', name: 'Français'},
+            {code: 'nl', name: 'Nederlands'},
+            {code: 'de', name: 'Deutsch'}
         ],
         defaultLocale: 'en',
-        strategy: 'prefix_and_default', // URL structure: /en, /fr, /nl, /de
-        vueI18n: './i18n.config.ts' // Use TypeScript config file instead of JSON
     },
 
     runtimeConfig: {
