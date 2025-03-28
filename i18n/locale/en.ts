@@ -9,10 +9,4 @@ export default{
     RememberMe: "Remember me",
     Surname: "Surname",
     Firstname: "First name",
-    AccountCreate: "Account create",
-    Home: "Home",
-    Products: "Products",
-    Quotations: "Quotations",
-    SignIn: "SignIn",
-    SignOut: "SignOut",
 }

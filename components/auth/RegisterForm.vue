@@ -7,7 +7,7 @@
     const config = useRuntimeConfig();
     const { toast } = useToastStore();
     const { t } = useI18n();
-    const localeRoute = useLocaleRoute()
+    const localeRoute = useLocaleRoute();
 
     // Form values
     const firstname = ref('');
@@ -40,88 +40,86 @@
 
     // Submit
     async function submitForm(): Promise<void> {
-      if (!validateFormSubmit()) return;
+        if (!validateFormSubmit()) return;
+        loading.value = true;
 
-      loading.value = true;
+        try {
+            const res = await $fetch(backendBaseUrl + '/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: {
+                firstname: firstname.value,
+                surname: surname.value,
+                email: email.value,
+                phone: phone.value,
+                password: password.value,
+              }
+            });
 
-      const backendBaseUrl = config.public.backendBaseUrl;
-
-      try {
-        const res = await $fetch(backendBaseUrl + '/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: {
-            firstname: firstname.value,
-            surname: surname.value,
-            email: email.value,
-            phone: phone.value,
-            password: password.value,
-          }
-        });
-
-        if (res.success) {
-            toast(t("AccountCreatedSuccessfully"));
-            navigateTo("/auth/login");
-        } else {
-            toast(res.message || t('RegistrationFailed'), 'error');
-        }
-      } catch (error: any) {
+            if (res.success) {
+              toast(t("AccountCreatedSuccessfully"));
+              navigateTo("/auth/login");
+            } else {
+              toast(res.message || t('RegistrationFailed'), 'error');
+            }
+        } catch (error: any) {
             toast(t('SomethingWentWrong'), 'error');
-      } finally {
-        loading.value = false;
-      }
+        } finally {
+            loading.value = false;
+        }
     }
 </script>
 
 <template>
-    <div class="flex justify-center align-content-center h-100">
-        <v-card class="mx-auto mb-10" max-width="400">
-            <v-sheet class="ma-4">
-                <v-form validate-on="submit lazy" @submit.prevent="submitForm">
-                    <h1 class="text-center">{{t('Register')}}</h1>
-                    <v-row>
-                        <v-col>
-                            <v-text-field
-                                v-model="firstname"
-                                :rules="[rules.required]"
-                                :label="t('Firstname') + '*'"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col>
-                            <v-text-field
-                                v-model="surname"
-                                :rules="[rules.required]"
-                                :label="t('Surname') + '*'"
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
+  <div class="flex justify-center align-content-center h-100">
+    <v-card class="mx-auto mb-10" max-width="400">
+      <v-sheet class="ma-4">
+        <v-form ref="formRef" validate-on="submit lazy" @submit.prevent="submitForm">
+          <h1 class="text-center">{{ t('Register') }}</h1>
+          <v-row>
+            <v-col>
+              <v-text-field
+                  v-model="firstname"
+                  :rules="[rules.required]"
+                  :label="t('Firstname') + '*'"
+              />
+            </v-col>
+            <v-col>
+              <v-text-field
+                  v-model="surname"
+                  :rules="[rules.required]"
+                  :label="t('Surname') + '*'"
+              />
+            </v-col>
+          </v-row>
 
-                    <v-text-field
-                        v-model="email"
-                        :rules="[rules.required, rules.email]"
-                        :label="t('EmailAddress') + '*'"
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="phone"
-                        :label="t('Phone')"
-                    ></v-text-field>
+          <v-text-field
+              v-model="email"
+              :rules="[rules.required, rules.email]"
+              :label="t('EmailAddress') + '*'"
+          />
 
-                    <v-text-field
-                        class="mt-2"
-                        v-model="password"
-                        :rules="[rules.required]"
-                        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                        :type="showPassword ? 'text' : 'password'"
-                        @click:append="showPassword = !showPassword"
-                        :label="t('Password') + '*'"
-                    ></v-text-field>
-                    <v-text-field
-                        class="mt-2"
-                        v-model="passwordConfirm"
-                        :rules="[rules.required, rules.passwordMatch]"
-                        :type="showPassword ? 'text' : 'password'"
-                        :label="t('PasswordConfirm' + '*')"
-                    ></v-text-field>
+          <v-text-field
+              v-model="phone"
+              :label="t('Phone')"
+          />
+
+          <v-text-field
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="showPassword = !showPassword"
+              :rules="[rules.required, rules.passwordLength, rules.passwordStrength]"
+              :label="t('Password') + '*'"
+          />
+
+          <v-text-field
+              class="mt-2"
+              v-model="passwordConfirm"
+              :rules="[rules.required, rules.passwordMatch(() => password.value)]"
+              :type="showPassword ? 'text' : 'password'"
+              :label="t('PasswordConfirm') + '*'"
+          />
 
                     <v-btn
                         :loading="loading"

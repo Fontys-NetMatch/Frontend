@@ -9,7 +9,7 @@ export const useNavbar = () => {
     const navigationItems = [
         { label: 'Home', to: '/' },
         { label: 'Products', to: '/product/dashboard' },
-        { label: 'quotations', to: '/quotations' },
+        { label: 'Quotations', to: '/quotations' },
     ];
 
     // Watch for locale changes and update the navigation items accordingly

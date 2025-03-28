@@ -2,8 +2,7 @@
     import { ref } from 'vue'
     import { useAuthStore } from "~/store/auth";
     import { useI18n } from 'vue-i18n';
-    const { t  } = useI18n()
-    const localeRoute = useLocaleRoute()
+    const { t } = useI18n();
 
     const authStore = useAuthStore();
 
@@ -89,9 +88,9 @@
                         color="primary"
                     ></v-btn>
                     <div class="mt-2 text-center">
-                      <NuxtLink class="text-decoration-none" :to="localeRoute('auth-register')">
-                        {{ t('AccountCreate') }}
-                      </NuxtLink>
+                        <NuxtLink class="text-decoration-none" to="/auth/register">
+                            Create an account
+                        </NuxtLink>
                     </div>
                 </v-form>
             </v-sheet>

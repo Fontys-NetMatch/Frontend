@@ -9,10 +9,4 @@ export default {
     RememberMe: "Se souvenir de moi",
     Surname: "Nom de famille",
     Firstname: "Prénom",
-    AccountCreate: "Créer un compte",
-    Home: "Accueil",
-    Products: "Produits",
-    Quotation: "Devis",
-    SignIn: "Se connecter",
-    SignOut: "Se déconnecter",
 }

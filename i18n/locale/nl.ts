@@ -9,10 +9,4 @@ export default {
     RememberMe: "Onthoud mij",
     Surname: "Achternaam",
     Firstname: "Voornaam",
-    AccountCreate: "Account aanmaken",
-    Home: "Home",
-    Products: "Producten",
-    Quotations: "Offertes",
-    SignIn: "Inloggen",
-    SignOut:"Uitloggen",
 }
