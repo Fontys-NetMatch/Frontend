@@ -3,6 +3,7 @@
     import {watchEffect} from "vue";
     import {useAuthStore} from "~/store/auth";
 
+    // Redirect to home page if user is already logged in
     watchEffect(() => {
         const authStore = useAuthStore();
         if (authStore.jwtToken !== undefined) {

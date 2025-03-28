@@ -9,7 +9,7 @@ export const useNavbar = () => {
     const navigationItems = [
         { label: 'Home', to: '/' },
         { label: 'Products', to: '/product/dashboard' },
-        { label: 'Quotations', to: '/quotations/dashboard' },
+        { label: 'quotations', to: '/quotations' },
     ];
 
     const signIn = () => {
@@ -20,8 +20,6 @@ export const useNavbar = () => {
         authStore.logout();
         router.push('/auth/login');
     };
-
-
 
     return {
         navigationItems,
