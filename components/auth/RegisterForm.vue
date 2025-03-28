@@ -121,23 +121,23 @@
               :label="t('PasswordConfirm') + '*'"
           />
 
-                    <v-btn
-                        :loading="loading"
-                        class="mt-2"
-                        :text="t('Register')"
-                        type="submit"
-                        block
-                        color="primary"
-                    ></v-btn>
-                    <div class="mt-2 text-center">
-                        <NuxtLink class="text-decoration-none" :to="localeRoute('auth-login')">
-                          {{ t('LoginToAccount') }}
-                        </NuxtLink>
-                    </div>
-                </v-form>
-            </v-sheet>
-        </v-card>
-    </div>
+            <v-btn
+                :loading="loading"
+                class="mt-2"
+                :text="t('Register')"
+                type="submit"
+                block
+                color="primary"
+            ></v-btn>
+            <div class="mt-2 text-center">
+            <NuxtLink class="text-decoration-none" :to="localeRoute('auth-login')">
+              {{ t('LoginToAccount') }}
+            </NuxtLink>
+          </div>
+        </v-form>
+      </v-sheet>
+    </v-card>
+  </div>
 </template>
 
 <style scoped>
