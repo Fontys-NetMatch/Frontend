@@ -9,4 +9,11 @@ export default {
     RememberMe: "Angemeldet bleiben",
     Surname: "Nachname",
     Firstname: "Vorname",
+    AccountCreate: "Konto erstellen",
+    Home: "Startseite",
+    Products: "Produkte",
+    Quotations: "Angebote",
+    SignIn: "Anmelden",
+    SignOut: "Abmelden",
+
 }
