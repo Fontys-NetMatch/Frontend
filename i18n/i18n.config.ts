@@ -5,6 +5,7 @@ import de from "./locale/de"
 export default defineI18nConfig(() => ({
     legacy: false,
     locale: 'en',
+    fallbackLocale: 'en',
     messages: {
         en,
         fr,

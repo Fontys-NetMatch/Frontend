@@ -1,6 +1,8 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useAuthStore } from "~/store/auth";
+    import { useI18n } from 'vue-i18n';
+    const { t } = useI18n();
 
     const authStore = useAuthStore();
 
@@ -56,11 +58,11 @@
         <v-card class="mx-auto mb-10" max-width="400">
             <v-sheet class="ma-4">
                 <v-form validate-on="submit lazy" @submit.prevent="submitForm">
-                    <h1 class="text-center">Login</h1>
+                    <h1 class="text-center">{{t('Login')}}</h1>
                     <v-text-field
                         v-model="email"
                         :rules="[rules.required, rules.email]"
-                        label="Email Address*"
+                        :label="t('EmailAddress')"
                     ></v-text-field>
                     <v-text-field
                         class="mt-2"
@@ -69,18 +71,18 @@
                         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="showPassword ? 'text' : 'password'"
                         @click:append="showPassword = !showPassword"
-                        label="Password*"
+                        :label="t('Password')"
                     ></v-text-field>
                     <v-switch
                         v-model="rememberMe"
-                        label="Remember me"
+                        :label="t('RememberMe')"
                         color="primary"
                     ></v-switch>
 
                     <v-btn
                         :loading="loading"
                         class="mt-2"
-                        text="Login"
+                        :text="t('Login')"
                         type="submit"
                         block
                         color="primary"
