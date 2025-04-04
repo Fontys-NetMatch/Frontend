@@ -1,7 +1,7 @@
-import en from "./locale/en"
-import fr from "./locale/fr"
-import nl from "./locale/nl"
-import de from "./locale/de"
+import en from "./locale/en.json"
+import fr from "./locale/fr.json"
+import nl from "./locale/nl.json"
+import de from "./locale/de.json"
 
 export default defineI18nConfig(() => ({
     legacy: false, // Use Composition API-based i18n

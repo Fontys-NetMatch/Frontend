@@ -1,0 +1,18 @@
+{
+  "AccountCreate": "Créer un compte",
+  "EmailAddress": "Adresse e-mail",
+  "Firstname": "Prénom",
+  "Home": "Accueil",
+  "Login": "Connexion",
+  "LoginToAccount": "Se connecter au compte",
+  "Password": "Mot de passe",
+  "PasswordConfirm": "Confirmer le mot de passe",
+  "Phone": "Téléphone",
+  "Products": "Produits",
+  "Quotations": "Devis",
+  "Register": "S'inscrire",
+  "RememberMe": "Se souvenir de moi",
+  "SignIn": "Se connecter",
+  "SignOut": "Se déconnecter",
+  "Surname": "Nom de famille"
+}
