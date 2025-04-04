@@ -1,5 +1,8 @@
 <script setup lang="ts">
 
+    import ProductFinder from "~/components/quotation/create/ProductFinder.vue";
+    import { useI18n } from 'vue-i18n';
+    const { t } = useI18n();
     import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
 
     const quotation = ref({
@@ -51,7 +54,7 @@
 
 <template>
 
-    <h3>Offerte #{{ quotation.id }}</h3>
+    <h3>{{ $t('offerte-quotation-id', [quotation.id]) }}</h3>
     <v-stepper
         prev-text="Previous"
         next-text="Next"
@@ -62,8 +65,7 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        Offerte
-                    </v-col>
+                        {{ t('offerte') }} </v-col>
                     <v-col cols="auto">
                         <ProductFinder
                             :on-product-add="onProductAdd"
@@ -77,8 +79,7 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        Klant Gegevens
-                    </v-col>
+                        {{ t('klant-gegevens') }} </v-col>
                     <v-col cols="auto">
 
                     </v-col>
@@ -90,11 +91,9 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        Afronden
-                    </v-col>
+                        {{ t('afronden') }} </v-col>
                     <v-col cols="auto">
-                        Overzicht offerte met totaal prijs
-                    </v-col>
+                        {{ t('overzicht-offerte-met-totaal-prijs') }} </v-col>
                 </v-row>
             </div>
         </template>
