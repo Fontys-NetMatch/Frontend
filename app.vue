@@ -2,7 +2,7 @@
   <NuxtLayout>
     <v-app>
       <NavBar/>
-      <v-main>
+      <v-main class="ma-2">
         <NuxtPage/>
       </v-main>
       <Toast/>
@@ -11,7 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import 'vue3-toastify/dist/index.css'
+import 'vue3-toastify/dist/index.css';
+
 import NavBar from '~/components/layout/NavBar.vue';
 import Toast from "~/components/Toast.vue";
 
