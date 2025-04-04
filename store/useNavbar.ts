@@ -7,9 +7,9 @@ export const useNavbar = () => {
     const router = useRouter();
 
     const navigationItems = [
-        { label: 'Home', to: '/' },
-        { label: 'Products', to: '/product/dashboard' },
-        { label: 'Quotations', to: '/quotations' },
+        { label: 'Home', to: '/', label: t('Home') },
+        { label: 'Products', to: '/product/dashboard', label: t('Products') },
+        { label: 'Quotations', to: '/quotations', label: t('Quotations') },
     ];
 
     // Watch for locale changes and update the navigation items accordingly

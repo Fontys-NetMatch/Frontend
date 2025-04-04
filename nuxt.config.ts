@@ -50,5 +50,5 @@ export default defineNuxtConfig({
         transpile: ['vuetify'],
     },
 
-    compatibilityDate: '2025-03-14',
+    compatibilityDate: '2025-03-28',
 });
