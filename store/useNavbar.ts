@@ -9,7 +9,7 @@ export const useNavbar = () => {
     const router = useRouter();
 
     const { t , locale } = useI18n(); // Use useI18n within setup or hook context
-    const localeRoute = useLocaleRoute(); // Ensure it's used in the correct context
+    const localeRoute = useLocaleRoute();
 
 
     const navigationItems = ref([
