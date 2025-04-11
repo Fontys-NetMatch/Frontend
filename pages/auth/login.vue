@@ -14,7 +14,7 @@
     });
 
     useSeoMeta({
-        title: this.$t('Login')
+        title: t('Login')
     });
 </script>
 

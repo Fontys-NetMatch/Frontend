@@ -34,11 +34,12 @@ export default defineNuxtConfig({
             { code: 'en', name: 'English' },
             { code: 'fr', name: 'Français' },
             { code: 'nl', name: 'Nederlands' },
-            { code: 'de', name: 'Deutsch' }
+            { code: 'de', name: 'Deutsch' },
         ],
         defaultLocale: 'en',
         strategy: 'prefix_and_default', // URL structure: /en, /fr, /nl, /de
-        vueI18n: './i18n.config.ts' // Use TypeScript config file instead of JSON
+        vueI18n: './i18n.config.ts', // Use TypeScript config file instead of JSON
+        lazy: true,
     },
 
     runtimeConfig: {
@@ -48,7 +49,7 @@ export default defineNuxtConfig({
     },
 
     build: {
-        transpile: ['vuetify'],
+        transpile: ['vuetify', 'vue-i18n'],
     },
 
     compatibilityDate: '2025-03-28',
