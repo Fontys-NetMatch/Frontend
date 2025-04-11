@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileFormComponent from "~/components/user/ProfileForm.vue";
+import RestoreProductForm from "~/components/product/RestoreProductForm.vue";
 import { watchEffect } from "vue";
 import { useAuthStore } from "~/store/auth";
 
@@ -13,7 +13,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <ProfileFormComponent />
+  <RestoreProductForm />
 </template>
 
 <style scoped>
