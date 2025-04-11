@@ -1,0 +1,10 @@
+{
+      "auth": {
+            "login": {
+                  "login": "Anmelden",
+                  "email": "E-Mail",
+                  "password": "Passwort",
+                  "submit": "Absenden"
+            }
+      }
+}

@@ -3,6 +3,7 @@
     import {watchEffect} from "vue";
     import {useAuthStore} from "~/store/auth";
     import { useI18n } from 'vue-i18n';
+    import {navigateTo, useSeoMeta} from "nuxt/app";
     const { t } = useI18n();
     // Redirect to home page if user is already logged in
     watchEffect(() => {
@@ -13,7 +14,7 @@
     });
 
     useSeoMeta({
-        title: this.$t('Login')
+        title: t('login.Login')
     });
 </script>
 

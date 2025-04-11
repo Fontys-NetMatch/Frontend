@@ -1,6 +1,14 @@
-import {defineNuxtConfig} from 'nuxt/config';
+import { defineNuxtConfig } from 'nuxt/config';
+import * as process from "node:process";
 
 export default defineNuxtConfig({
+    // Remove or correct the serverDir if unnecessary
+    $development: undefined,
+    $env: undefined,
+    $meta: undefined,
+    $production: undefined,
+    $test: undefined,
+
     css: [
         'bootstrap/dist/css/bootstrap.min.css'
     ],
@@ -18,26 +26,19 @@ export default defineNuxtConfig({
     ],
 
     vuetify: {
-        // Vuetify-specific options
         vuetifyOptions: {
-            // Add your Vuetify options here
+            // Add your Vuetify options here if any
         }
     },
 
     icon: {
         serverBundle: {
-            collections: ['uil', 'mdi'] // <!--- this
+            collections: ['uil', 'mdi'], // <-- this part is fine
         }
     },
 
     i18n: {
-        locales: [
-            {code: 'en', name: 'English'},
-            {code: 'fr', name: 'Français'},
-            {code: 'nl', name: 'Nederlands'},
-            {code: 'de', name: 'Deutsch'}
-        ],
-        defaultLocale: 'en',
+        vueI18n: './i18n.config.ts'
     },
 
     runtimeConfig: {
