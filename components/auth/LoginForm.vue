@@ -3,11 +3,10 @@
     import { useAuthStore } from "~/store/auth";
     import { useI18n } from 'vue-i18n';
     import {useLocaleRoute} from "#i18n";
-    const { t , locale} = useI18n();
+    const { t } = useI18n();
 
     const authStore = useAuthStore();
     const localeRoute = useLocaleRoute()
-
 
     let loading = ref(false);
     let email = ref("mail@example.com");
@@ -61,7 +60,7 @@
         <v-card class="mx-auto mb-10" max-width="400">
             <v-sheet class="ma-4">
                 <v-form validate-on="submit lazy" @submit.prevent="submitForm">
-                  <h1 class="text-center">{{ t('auth.login.login') }}</h1>
+                    <h1 class="text-center">{{t('Login')}}</h1>
                     <v-text-field
                         v-model="email"
                         :rules="[rules.required, rules.email]"
