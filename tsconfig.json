@@ -1,17 +1,4 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json",
-
-  "compilerOptions": {
-    "types": ["@types/node", "@nuxt/types", "@nuxtjs/i18n"],
-    "resolveJsonModule": true,
-    "esModuleInterop": true
-  },
-  "include": [
-    "vue-shim.d.ts",
-    "nuxt.config.ts",
-    "plugins/**/*.ts",
-    "pages/**/*.vue",
-    "components/**/*.vue"
-  ]
+  "extends": "./.nuxt/tsconfig.json"
 }
