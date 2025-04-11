@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "login": {
+      "login": "Login",
+      "emailAddress": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember Me",
+      "accountCreate": "Create an Account"
+    }
+  }
+}
