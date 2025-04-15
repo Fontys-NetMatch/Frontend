@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-    import ProductFinder from "~/components/quotation/create/ProductFinder.vue";
+    import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
 
     const quotation = ref({
         id: 432498326437,
