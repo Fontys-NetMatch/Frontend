@@ -1,21 +1,19 @@
 <script setup lang="ts">
 
-    import ProductFinder from "~/components/quotation/create/ProductFinder.vue";
-    import { useI18n } from 'vue-i18n';
-    const { t } = useI18n();
+    import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
 
     const quotation = ref({
         id: 432498326437,
         customer: {
-            name: t('john-doe'),
-            address: t('123-main-st'),
-            city: t('anytown'),
+            name: 'John Doe',
+            address: '123 Main St',
+            city: 'Anytown',
             state: 'CA',
             zip: '12345'
         },
         items: [
-            { description: t('item-1'), quantity: 1, price: 100 },
-            { description: t('item-2'), quantity: 2, price: 200 }
+            { description: 'Item 1', quantity: 1, price: 100 },
+            { description: 'Item 2', quantity: 2, price: 200 }
         ],
         totalPrice: 500
     });
@@ -28,7 +26,7 @@
 
 <template>
 
-    <h3>{{ $t('offerte-quotation-id', [quotation.id]) }}</h3>
+    <h3>Offerte #{{ quotation.id }}</h3>
     <v-stepper
         prev-text="Previous"
         next-text="Next"
@@ -39,7 +37,8 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        {{ t('offerte') }} </v-col>
+                        Offerte
+                    </v-col>
                     <v-col cols="auto">
                         <ProductFinder
                             :on-product-add="onProductAdd"
@@ -53,7 +52,8 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        {{ t('klant-gegevens') }} </v-col>
+                        Klant Gegevens
+                    </v-col>
                     <v-col cols="auto">
 
                     </v-col>
@@ -65,9 +65,11 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        {{ t('afronden') }} </v-col>
+                        Afronden
+                    </v-col>
                     <v-col cols="auto">
-                        {{ t('overzicht-offerte-met-totaal-prijs') }} </v-col>
+                        Overzicht offerte met totaal prijs
+                    </v-col>
                 </v-row>
             </div>
         </template>
