@@ -12,15 +12,23 @@ const { toast } = useToastStore();
 const config = useRuntimeConfig();
 const auth = useAuthStore();
 
+const getTranslation = (product: any) => {
+  return product.translations?.find((t: any) => t.langIsoCode === locale.value)
+      || product.translations?.find((t: any) => t.langIsoCode === 'en');
+};
+
+
+
 const fetchInactiveProducts = async () => {
   try {
-    const res = await $fetch(`${config.public.backendBaseUrl}/product/inactive`, {
+    const res = await $fetch(`${config.public.backendBaseUrl}/product?isDeleted=true`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${auth.jwtToken}`,
+        Authorization: `Bearer ${auth.jwtToken}`,
         'Content-Type': 'application/json'
       }
     });
+
     console.log("Ontvangen producten:", res);
 
     if ('products' in res && Array.isArray(res.products)) {
@@ -85,13 +93,14 @@ onMounted(fetchInactiveProducts);
               :key="product.id"
           >
             <v-list-item-title>
-              {{ product.translation?.name || 'Geen naam' }}
+              {{ getTranslation(product)?.name || 'No name' }}
             </v-list-item-title>
+
             <v-list-item-subtitle>
-              {{ product.translations?.description || 'No description' }}
-
+              <div style="white-space: pre-wrap;" class="text-body-2 text--secondary">
+                {{ getTranslation(product)?.description || 'No description' }}
+              </div>
             </v-list-item-subtitle>
-
 
             <v-btn
                 color="success"
@@ -103,7 +112,6 @@ onMounted(fetchInactiveProducts);
             </v-btn>
 
           </v-list-item>
-
         </v-list>
 
         <div v-else class="text-subtitle-1 text-center text-grey">
@@ -113,3 +121,4 @@ onMounted(fetchInactiveProducts);
     </v-card>
   </div>
 </template>
+
