@@ -18,11 +18,11 @@
     }
 
     const productTypes = ref([]);
-    const products = [];
+    const products = ref([]);
 
-    const selectedProductType = ref('All Product Types');
+    const selectedProductType = ref(-1);
     const filterMenu = ref(false);
-    const productTypeSearch = ref('');
+    const productTypeSearch = ref(''); // TODO: Implement search
 
     const startDateFilterTemp = ref('');
     const endDateFilterTemp = ref('');
@@ -63,10 +63,29 @@
                 });
             }).catch(err => {
                 toast('Error getting product types', 'error');
+                console.log(err);
             });
     }
     const fetchProducts = () => {
-        $fetch(backendBaseUrl + '/product', {
+        let queryParams = {};
+        if(selectedProductType.value != -1){
+            queryParams['typeId'] = selectedProductType.value;
+        }
+        if(startDateFilter.value.length > 0){
+            queryParams['startDateTime'] = startDateFilter.value;
+        }
+        if(endDateFilter.value.length > 0){
+            queryParams['endDateTime'] = endDateFilter.value;
+        }
+        if(priceRangeFilter.value.length > 0){
+            queryParams['minPrice'] = priceRangeFilter.value[0];
+            queryParams['maxPrice'] = priceRangeFilter.value[1];
+        }
+        if(minPersonCountFilter.value > 0){
+            queryParams['minPeople'] = minPersonCountFilter.value;
+        }
+
+        $fetch(backendBaseUrl + '/product?' + new URLSearchParams(queryParams), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,31 +97,37 @@
                     toast(res.message, 'error');
                     return;
                 }
+                if(res.statusCode != 200){
+                    return;
+                }
 
                 res.products.forEach(product => {
+                    let productType = product.productType;
+                    let productTypeTranslation = productType.translations.find(translation => translation.langIsoCode === "en");
+
                     let translation = product.translations.find(translation => translation.langIsoCode === "en");
                     let dates = product.dates;
 
                     let minPrice = Math.min(...dates.map(date => date.price));
                     let maxPrice = Math.max(...dates.map(date => date.price));
 
-                    products.push({
+                    products.value.push({
                         id: product.id,
                         name: translation.name,
                         description: translation.description,
-                        type: translation.type,
+                        type: productTypeTranslation.name,
                         tags: translation.tags,
                         startLocation: product.startLocation,
                         endLocation: product.endLocation,
                         minPrice: minPrice,
-                        maxPrice: maxPrice
+                        maxPrice: maxPrice,
+                        dates: dates
                     });
                 });
-
-                console.log(products);
             }).catch(err => {
-            toast('Error getting product types', 'error');
-        });
+                toast('Error getting products', 'error');
+                console.log(err);
+            });
     }
 
     const resetFilters = () => {
@@ -131,6 +156,12 @@
 
     fetchProductTypes();
     fetchProducts();
+
+    watch([selectedProductType, startDateFilter, endDateFilter, priceRangeFilter, minPersonCountFilter], () => {
+        products.value = [];
+        fetchProducts();
+    });
+
 </script>
 
 <template>
@@ -263,74 +294,88 @@
         <v-list
             style="height: calc(100vh - 450px); overflow-y: auto;"
         >
-            <v-list-item
-                v-for="(item, index) in products"
-                :key="index"
-                class="px-0"
-            >
-                <v-card
-                    variant="tonal"
-                    class="w-100"
+            <template v-if="products.length > 0">
+                <v-list-item
+                    v-for="(item, index) in products"
+                    :key="index"
+                    class="px-0"
                 >
-                    <v-card-title>
-                        <v-row>
-                            <v-col>
-                                {{ item.name }}
-                            </v-col>
-                            <v-col cols="auto">
+                    <v-card
+                        variant="tonal"
+                        class="w-100"
+                    >
+                        <v-card-title>
+                            <v-row>
+                                <v-col>
+                                    {{ item.name }}
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-chip
+                                        color="primary"
+                                        text-color="white"
+                                    >
+                                        <template v-if="item.minPrice == item.maxPrice">
+                                            {{ toCurrency(item.minPrice) }}
+                                        </template>
+                                        <template v-else>
+                                            {{ toCurrency(item.minPrice) }} - {{ toCurrency(item.maxPrice) }}
+                                        </template>
+                                    </v-chip>
+                                </v-col>
+                            </v-row>
+                        </v-card-title>
+                        <v-card-subtitle>
+                            {{ item.description }}
+                        </v-card-subtitle>
+                        <v-card-text>
+                            <v-row>
+                                <v-col v-if="item.startLocation != null">
+                                    <h5>Departure:</h5>
+                                    <strong>Datetime: </strong><span>{{ item.startLocation.date }} {{ item.startLocation.time }}</span><br>
+                                    <strong>Location: </strong><span>{{ item.startLocation.location }}</span>
+                                </v-col>
+                                <v-col v-if="item.endLocation != null">
+                                    <h5>Arrival:</h5>
+                                    <strong>Datetime: </strong><span>{{ item.endLocation.date }} {{ item.endLocation.time }}</span><br>
+                                    <strong>Location: </strong><span>{{ item.endLocation.location }}</span>
+                                </v-col>
+                            </v-row>
+                            <div class="d-flex gap-1 mt-2">
                                 <v-chip
                                     color="primary"
                                     text-color="white"
+                                    size="small"
                                 >
-                                    {{ toCurrency(item.price) }}
+                                    {{ item.type }}
                                 </v-chip>
-                            </v-col>
-                        </v-row>
-                    </v-card-title>
-                    <v-card-subtitle>
-                        {{ item.description }}
-                    </v-card-subtitle>
-                    <v-card-text>
-                        <v-row>
-                            <v-col v-if="item.departure != null">
-                                <h5>Departure:</h5>
-                                <strong>Datetime: </strong><span>{{ item.departure.date }} {{ item.departure.time }}</span><br>
-                                <strong>Location: </strong><span>{{ item.departure.location }}</span>
-                            </v-col>
-                            <v-col v-if="item.arrival != null">
-                                <h5>Arrival:</h5>
-                                <strong>Datetime: </strong><span>{{ item.arrival.date }} {{ item.arrival.time }}</span><br>
-                                <strong>Location: </strong><span>{{ item.arrival.location }}</span>
-                            </v-col>
-                        </v-row>
-                        <div class="d-flex gap-1 mt-2">
-                            <v-chip
+                                <v-chip
+                                    text-color="white"
+                                    size="small"
+                                    v-for="tag in item.tags"
+                                >
+                                    {{ tag }}
+                                </v-chip>
+                            </div>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
                                 color="primary"
-                                text-color="white"
-                                size="small"
+                                @click="onProductAdd(item)"
                             >
-                                {{ item.type }}
-                            </v-chip>
-                            <v-chip
-                                text-color="white"
-                                size="small"
-                                v-for="tag in item.tags"
-                            >
-                                {{ tag }}
-                            </v-chip>
-                        </div>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                            color="primary"
-                            @click="onProductAdd(item)"
-                        >
-                            Add to Quotation
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-list-item>
+                                Add to Quotation
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-list-item>
+            </template>
+            <template v-else>
+                <v-list-item
+                    class="px-0 text-center"
+                >
+                    No products found
+                </v-list-item>
+            </template>
         </v-list>
     </div>
 </template>
