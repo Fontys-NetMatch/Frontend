@@ -2,13 +2,12 @@
 import { ref } from 'vue';
 import { useToastStore } from '~/store/toast';
 import { rules } from '~/utils/userValidation';
+import {  useLocaleRoute } from '#i18n';
 import { useI18n } from 'vue-i18n';
-import {useLocaleRoute} from "#i18n";
 
 const config = useRuntimeConfig();
 const { toast } = useToastStore();
-const { t } = useI18n();
-const localeRoute = useLocaleRoute()
+const localeRoute = useLocaleRoute();
 
 let loading = ref(false);
 let firstname = ref("");
@@ -18,6 +17,8 @@ let phone = ref("");
 let password = ref("");
 let passwordConfirm = ref("");
 let showPassword = ref(false);
+
+const { t } = useI18n();
 
 function validateFormSubmit(): boolean {
   let valid = true;
@@ -60,35 +61,36 @@ async function submitForm(): Promise<void> {
       toast(t("AccountCreatedSuccessfully"));
       navigateTo("/auth/login");
     } else {
-      toast(res.message || t('RegistrationFailed'), 'error');
+      toast(res.message || 'Registration failed. Please try again.', 'error');
     }
   } catch (error: any) {
-    toast(t('SomethingWentWrong'), 'error');
+    toast('Something went wrong. Please try again.', 'error');
   } finally {
     loading.value = false;
   }
 }
 </script>
 
+
 <template>
   <div class="flex justify-center align-content-center h-100">
     <v-card class="mx-auto mb-10" max-width="400">
       <v-sheet class="ma-4">
         <v-form ref="formRef" validate-on="submit lazy" @submit.prevent="submitForm">
-          <h1 class="text-center">{{ t('Register') }}</h1>
+          <h1 class="text-center">{{ t('auth.register.register') }}</h1>
           <v-row>
             <v-col>
               <v-text-field
                   v-model="firstname"
                   :rules="[rules.required]"
-                  :label="t('Firstname') + '*'"
+                  :label="t('auth.register.firstname') + '*'"
               />
             </v-col>
             <v-col>
               <v-text-field
                   v-model="surname"
                   :rules="[rules.required]"
-                  :label="t('Surname') + '*'"
+                  :label="t('auth.register.surname') + '*'"
               />
             </v-col>
           </v-row>
@@ -96,12 +98,12 @@ async function submitForm(): Promise<void> {
           <v-text-field
               v-model="email"
               :rules="[rules.required, rules.email]"
-              :label="t('EmailAddress') + '*'"
+              :label="t('auth.register.emailaddress') + '*'"
           />
 
           <v-text-field
               v-model="phone"
-              :label="t('Phone')"
+              :label="t('auth.register.phone')"
           />
 
           <v-text-field
@@ -110,7 +112,7 @@ async function submitForm(): Promise<void> {
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               @click:append="showPassword = !showPassword"
               :rules="[rules.required, rules.passwordLength, rules.passwordStrength]"
-              :label="t('Password') + '*'"
+              :label="t('auth.register.password') + '*'"
           />
 
           <v-text-field
@@ -118,21 +120,23 @@ async function submitForm(): Promise<void> {
               v-model="passwordConfirm"
               :rules="[rules.required, rules.passwordMatch(() => password.value)]"
               :type="showPassword ? 'text' : 'password'"
-              :label="t('PasswordConfirm') + '*'"
+              :label="t('auth.register.passwordconfirm') + '*'"
           />
 
+          <!-- ✅ Fixed button with slot-based label -->
           <v-btn
               :loading="loading"
               class="mt-2"
-              :text="t('Register')"
               type="submit"
               block
               color="primary"
-          />
+          >
+            {{ t('auth.register.register') }}
+          </v-btn>
 
           <div class="mt-2 text-center">
             <NuxtLink class="text-decoration-none" :to="localeRoute('/auth/login')">
-              {{ t('LoginToAccount') }}
+              {{ t('auth.register.logintoaccount') }}
             </NuxtLink>
           </div>
         </v-form>

@@ -10,6 +10,9 @@
         return value.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
     }
 
+    import { useI18n } from 'vue-i18n';
+    const { t } = useI18n()
+
     import {fakeProductTypes} from './tempData/productTypes';
     const productTypes = fakeProductTypes;
 
@@ -59,7 +62,7 @@
         <v-row>
             <v-col class="pr-0">
                 <v-select
-                    label="Select Product Type"
+                    :label="t('quotation.create.Select-Product-Type')"
                     v-model="selectedProductType"
                     :items="productTypes"
                     hide-details
@@ -84,7 +87,7 @@
                         <v-card-text>
                             <div>
                                 <v-label>
-                                    Start Date
+                                  "t('quotation.create.start-date')"
                                 </v-label>
                                 <v-text-field
                                     v-model="startDateFilterTemp"
