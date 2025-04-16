@@ -1,20 +1,24 @@
 <script setup lang="ts">
+    import {useAuthStore} from "~/store/auth";
+    import {useToastStore} from "~/store/toast";
+
     defineProps({
         onProductAdd: {
             type: Function,
             required: true
         }
     });
+    const config = useRuntimeConfig();
+    const { toast } = useToastStore();
+    const authStore = useAuthStore();
+    let backendBaseUrl = config.public.backendBaseUrl;
 
     const toCurrency = (value: string) => {
         return value.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
     }
 
-    import { useI18n } from 'vue-i18n';
-    const { t } = useI18n()
-
-    import {fakeProductTypes} from './tempData/productTypes';
-    const productTypes = fakeProductTypes;
+    const productTypes = ref([]);
+    const products = [];
 
     const selectedProductType = ref('All Product Types');
     const filterMenu = ref(false);
@@ -29,6 +33,77 @@
     const endDateFilter = ref('');
     const priceRangeFilter = ref([0, 1000]);
     const minPersonCountFilter = ref(1);
+
+    const fetchProductTypes = () => {
+        $fetch(backendBaseUrl + '/product-type', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + authStore.jwtToken
+            }
+        })
+            .then(res => {
+                if(!res.success){
+                    toast(res.message, 'error');
+                    return;
+                }
+
+                productTypes.value.push({
+                    value: -1,
+                    title: "All Product Types",
+                });
+
+                res.productTypes.forEach(productType => {
+                    let translation = productType.translations.find(translation => translation.langIsoCode === "en");
+
+                    productTypes.value.push({
+                        value: productType.id,
+                        title: translation.name,
+                    });
+                });
+            }).catch(err => {
+                toast('Error getting product types', 'error');
+            });
+    }
+    const fetchProducts = () => {
+        $fetch(backendBaseUrl + '/product', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + authStore.jwtToken
+            }
+        })
+            .then(res => {
+                if(!res.success){
+                    toast(res.message, 'error');
+                    return;
+                }
+
+                res.products.forEach(product => {
+                    let translation = product.translations.find(translation => translation.langIsoCode === "en");
+                    let dates = product.dates;
+
+                    let minPrice = Math.min(...dates.map(date => date.price));
+                    let maxPrice = Math.max(...dates.map(date => date.price));
+
+                    products.push({
+                        id: product.id,
+                        name: translation.name,
+                        description: translation.description,
+                        type: translation.type,
+                        tags: translation.tags,
+                        startLocation: product.startLocation,
+                        endLocation: product.endLocation,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice
+                    });
+                });
+
+                console.log(products);
+            }).catch(err => {
+            toast('Error getting product types', 'error');
+        });
+    }
 
     const resetFilters = () => {
         // Close the filter menu
@@ -54,7 +129,8 @@
         minPersonCountFilter.value = minPersonCountFilterTemp.value;
     }
 
-    const items = fakeProducts;
+    fetchProductTypes();
+    fetchProducts();
 </script>
 
 <template>
@@ -62,7 +138,7 @@
         <v-row>
             <v-col class="pr-0">
                 <v-select
-                    :label="t('quotation.create.Select-Product-Type')"
+                    label="Select Product Type"
                     v-model="selectedProductType"
                     :items="productTypes"
                     hide-details
@@ -87,7 +163,7 @@
                         <v-card-text>
                             <div>
                                 <v-label>
-                                  "t('quotation.create.start-date')"
+                                    Start Date
                                 </v-label>
                                 <v-text-field
                                     v-model="startDateFilterTemp"
@@ -188,7 +264,7 @@
             style="height: calc(100vh - 450px); overflow-y: auto;"
         >
             <v-list-item
-                v-for="(item, index) in filteredItems"
+                v-for="(item, index) in products"
                 :key="index"
                 class="px-0"
             >

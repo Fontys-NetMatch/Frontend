@@ -7,7 +7,6 @@
     // Redirect to home page if user is already logged in
     watchEffect(() => {
         const authStore = useAuthStore();
-        console.log(authStore);
         if (authStore.jwtToken !== undefined) {
             navigateTo("/");
         }
