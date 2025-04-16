@@ -1,3 +1,7 @@
 {
-  "login": "French noices"
+  "login": "connexion",
+  "emailaddress": "adresse e-mail",
+  "password": "mot de passe",
+  "rememberme": "souviens-toi de moi",
+  "accountcreate": "créer un compte"
 }

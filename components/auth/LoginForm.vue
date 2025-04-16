@@ -64,7 +64,7 @@
                     <v-text-field
                         v-model="email"
                         :rules="[rules.required, rules.email]"
-                        :label="t('EmailAddress')"
+                        :label="t('auth.login.emailaddress')"
                     ></v-text-field>
                     <v-text-field
                         class="mt-2"
@@ -73,25 +73,25 @@
                         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="showPassword ? 'text' : 'password'"
                         @click:append="showPassword = !showPassword"
-                        :label="t('Password')"
+                        :label="t('auth.login.password')"
                     ></v-text-field>
                     <v-switch
                         v-model="rememberMe"
-                        :label="t('RememberMe')"
+                        :label="t('auth.login.rememberme')"
                         color="primary"
                     ></v-switch>
 
                     <v-btn
                         :loading="loading"
                         class="mt-2"
-                        :text="t('Login')"
+                        :text="t('auth.login.login')"
                         type="submit"
                         block
                         color="primary"
                     ></v-btn>
                     <div class="mt-2 text-center">
                         <NuxtLink class="text-decoration-none" :to="localeRoute('/auth/register')">
-                            {{t('AccountCreate')}}
+                            {{t('auth.login.accountcreate')}}
                         </NuxtLink>
                     </div>
                 </v-form>

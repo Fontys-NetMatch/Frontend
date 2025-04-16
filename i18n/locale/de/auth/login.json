@@ -1,3 +1,7 @@
 {
-  "login": "Aanmelden"
+  "login": "anmelden",
+  "emailaddress": "E-Mail-Adresse",
+  "password": "Passwort",
+  "rememberme": "angemeldet bleiben",
+  "accountcreate": "Konto erstellen"
 }

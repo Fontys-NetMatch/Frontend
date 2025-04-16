@@ -3,6 +3,7 @@
     import { useToastStore } from '~/store/toast';
     import { rules } from '~/utils/userValidation';
     import { useI18n } from 'vue-i18n';
+    import {  useLocaleRoute } from '#i18n';
 
     const config = useRuntimeConfig();
     const { toast } = useToastStore();
@@ -75,20 +76,20 @@
     <v-card class="mx-auto mb-10" max-width="400">
       <v-sheet class="ma-4">
         <v-form ref="formRef" validate-on="submit lazy" @submit.prevent="submitForm">
-          <h1 class="text-center">{{ t('Register') }}</h1>
+          <h1 class="text-center">{{ t('auth.register.register') }}</h1>
           <v-row>
             <v-col>
               <v-text-field
                   v-model="firstname"
                   :rules="[rules.required]"
-                  :label="t('Firstname') + '*'"
+                  :label="t('auth.register.firstname') + '*'"
               />
             </v-col>
             <v-col>
               <v-text-field
                   v-model="surname"
                   :rules="[rules.required]"
-                  :label="t('Surname') + '*'"
+                  :label="t('auth.register.surname') + '*'"
               />
             </v-col>
           </v-row>
@@ -96,12 +97,12 @@
           <v-text-field
               v-model="email"
               :rules="[rules.required, rules.email]"
-              :label="t('EmailAddress') + '*'"
+              :label="t('auth.register.emailaddress') + '*'"
           />
 
           <v-text-field
               v-model="phone"
-              :label="t('Phone')"
+              :label="t('auth.register.phone')"
           />
 
           <v-text-field
@@ -110,7 +111,7 @@
               :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               @click:append="showPassword = !showPassword"
               :rules="[rules.required, rules.passwordLength, rules.passwordStrength]"
-              :label="t('Password') + '*'"
+              :label="t('auth.register.password') + '*'"
           />
 
           <v-text-field
@@ -118,20 +119,24 @@
               v-model="passwordConfirm"
               :rules="[rules.required, rules.passwordMatch(() => password.value)]"
               :type="showPassword ? 'text' : 'password'"
-              :label="t('PasswordConfirm') + '*'"
+              :label="t('auth.register.passwordconfirm') + '*'"
           />
 
-            <v-btn
-                :loading="loading"
-                class="mt-2"
-                :text="t('Register')"
-                type="submit"
-                block
-                color="primary"
-            ></v-btn>
-            <div class="mt-2 text-center">
-            <NuxtLink class="text-decoration-none" :to="localeRoute('auth-login')">
-              {{ t('LoginToAccount') }}
+          <!-- ✅ Fixed button with slot-based label -->
+          <v-btn
+              :loading="loading"
+              class="mt-2"
+              :text="t('Register')"
+              type="submit"
+              block
+              color="primary"
+          >
+            {{ t('auth.register.register') }}
+          </v-btn>
+
+          <div class="mt-2 text-center">
+            <NuxtLink class="text-decoration-none" :to="localeRoute('/auth/login')">
+              {{ t('auth.register.logintoaccount') }}
             </NuxtLink>
           </div>
         </v-form>
