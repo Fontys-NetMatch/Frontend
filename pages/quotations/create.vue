@@ -51,14 +51,13 @@ import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue
 
         <template v-slot:item.2 class="stepper-item-panel">
             <div class="stepper-item-panel">
-                <v-row>
-                    <v-col>
+2
+              
                         Klant Gegevens
-                    </v-col>
-                    <v-col cols="auto">
 
-                    </v-col>
-                </v-row>
+                        <CustomerDetails />
+
+
             </div>
         </template>
 
