@@ -79,13 +79,8 @@
 
         <template v-slot:item.2 class="stepper-item-panel">
             <div class="stepper-item-panel">
-                <v-row>
-                    <v-col>
-                        {{ t('klant-gegevens') }} </v-col>
-                    <v-col cols="auto">
-
-                    </v-col>
-                </v-row>
+                {{ t('klant-gegevens') }}
+                <CustomerDetails />
             </div>
         </template>
 
