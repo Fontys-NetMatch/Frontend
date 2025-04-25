@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-    import ProductFinder from "~/components/quotation/create/ProductFinder.vue";
+    import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
 
     const quotation = ref({
         id: 432498326437,
@@ -11,15 +11,40 @@
             state: 'CA',
             zip: '12345'
         },
-        items: [
-            { description: 'Item 1', quantity: 1, price: 100 },
-            { description: 'Item 2', quantity: 2, price: 200 }
-        ],
-        totalPrice: 500
+        items: [],
+        totalPrice: 0
     });
 
-    const onProductAdd = () => {
-        console.log("Product added");
+    const calcTotalPrice = () => {
+        quotation.value.totalPrice = 0;
+        quotation.value.items.forEach(item => {
+            quotation.value.totalPrice += item.date.price;
+        });
+    }
+
+    const onProductAdd = (product, productDate) => {
+        // Add product to quotation
+        const newProduct = {
+            product: {
+                id: product.id,
+                name: product.name,
+                description: product.description,
+                type: product.type,
+                startLocation: product.startLocation,
+                endLocation: product.endLocation,
+            },
+            date: {
+                id: productDate.id,
+                price: product.price,
+                startDate: productDate.startDate,
+                endDate: productDate.endDate,
+            }
+        };
+        quotation.value.items.push(newProduct);
+
+        calcTotalPrice();
+
+        console.log(quotation.value);
     };
 
 </script>
