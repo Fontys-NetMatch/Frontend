@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "install": "npm install",
     "build": "nuxt build",
     "clean": "rimraf ./dist",
     "dev": "nuxt dev -o",

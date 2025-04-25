@@ -144,6 +144,3 @@
     </v-card>
   </div>
 </template>
-
-<style scoped>
-</style>
