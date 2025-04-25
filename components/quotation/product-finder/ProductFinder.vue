@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import {useAuthStore} from "~/store/auth";
     import {useToastStore} from "~/store/toast";
+    import debounce from "lodash.debounce"
 
-    defineProps({
+    const props = defineProps({
         onProductAdd: {
             type: Function,
             required: true
@@ -22,7 +23,10 @@
 
     const selectedProductType = ref(-1);
     const filterMenu = ref(false);
-    const productTypeSearch = ref(''); // TODO: Implement search
+    const productTypeSearch = ref('');
+    const debouncedSearchQuery = debounce(() => {
+        fetchProducts();
+    }, 500);
 
     const startDateFilterTemp = ref('');
     const endDateFilterTemp = ref('');
@@ -84,6 +88,9 @@
         if(minPersonCountFilter.value > 0){
             queryParams['minPeople'] = minPersonCountFilter.value;
         }
+        if(productTypeSearch.value.length > 0){
+            queryParams['searchQuery'] = productTypeSearch.value;
+        }
 
         $fetch(backendBaseUrl + '/product?' + new URLSearchParams(queryParams), {
             method: 'GET',
@@ -101,6 +108,7 @@
                     return;
                 }
 
+                products.value = [];
                 res.products.forEach(product => {
                     let productType = product.productType;
                     let productTypeTranslation = productType.translations.find(translation => translation.langIsoCode === "en");
@@ -158,9 +166,15 @@
     fetchProducts();
 
     watch([selectedProductType, startDateFilter, endDateFilter, priceRangeFilter, minPersonCountFilter], () => {
-        products.value = [];
         fetchProducts();
     });
+
+    const selectProductDate = (product, productDate) => {
+        if(props.onProductAdd === undefined){
+            throw new Error("onProductAdd is not defined");
+        }
+        props.onProductAdd(product, productDate);
+    }
 
 </script>
 
@@ -287,6 +301,7 @@
             placeholder="Search..."
             hide-details
             v-model="productTypeSearch"
+            @input="debouncedSearchQuery"
         ></v-text-field>
 
         <v-divider></v-divider>
@@ -330,17 +345,15 @@
                         <v-card-text>
                             <v-row>
                                 <v-col v-if="item.startLocation != null">
-                                    <h5>Departure:</h5>
-                                    <strong>Datetime: </strong><span>{{ item.startLocation.date }} {{ item.startLocation.time }}</span><br>
-                                    <strong>Location: </strong><span>{{ item.startLocation.location }}</span>
+                                    <h6>Departure:</h6>
+                                    <span>{{ item.startLocation }}</span>
                                 </v-col>
                                 <v-col v-if="item.endLocation != null">
-                                    <h5>Arrival:</h5>
-                                    <strong>Datetime: </strong><span>{{ item.endLocation.date }} {{ item.endLocation.time }}</span><br>
-                                    <strong>Location: </strong><span>{{ item.endLocation.location }}</span>
+                                    <h6>Arrival:</h6>
+                                    <span>{{ item.endLocation }}</span>
                                 </v-col>
                             </v-row>
-                            <div class="d-flex gap-1 mt-2">
+                            <div class="d-flex gap-1 mt-3">
                                 <v-chip
                                     color="primary"
                                     text-color="white"
@@ -359,12 +372,202 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn
-                                color="primary"
-                                @click="onProductAdd(item)"
-                            >
-                                Add to Quotation
-                            </v-btn>
+                            <v-dialog max-width="500">
+                                <template v-slot:activator="{ props: activatorProps }">
+                                    <v-btn
+                                        color="primary"
+                                        v-bind="activatorProps"
+                                    >
+                                        Add to Quotation
+                                    </v-btn>
+                                </template>
+
+                                <template v-slot:default="{ isActive }">
+                                    <v-card>
+                                        <v-card-title>
+                                            <v-row>
+                                                <v-col>
+                                                    Select Time Slot
+                                                </v-col>
+                                                <v-col cols="auto">
+                                                    <v-btn
+                                                        icon
+                                                        @click="isActive.value = false"
+                                                        class="ml-auto bg-transparent"
+                                                        variant="plain"
+                                                    >
+                                                        <v-icon>mdi-close</v-icon>
+                                                    </v-btn>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card-title>
+                                        <v-card-text class="date-select-content">
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                        </v-card-text>
+                                    </v-card>
+                                </template>
+                            </v-dialog>
                         </v-card-actions>
                     </v-card>
                 </v-list-item>
@@ -383,5 +586,9 @@
 <style scoped>
     .product-finder{
         min-width: 450px;
+    }
+    .date-select-content{
+        max-height: 60vh;
+        overflow-y: auto;
     }
 </style>
