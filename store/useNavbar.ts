@@ -10,9 +10,9 @@ export const useNavbar = () => {
     const localeRoute = useLocaleRoute();
 
     const navigationItems = [
-        { label: 'Home', to: '/', label: t('Home') },
-        { label: 'Products', to: '/product/dashboard', label: t('Products') },
-        { label: 'Quotations', to: '/quotations', label: t('Quotations') },
+        { to: '/', label: t('Home') },
+        { to: '/product/dashboard', label: t('Products') },
+        { to: '/quotations', label: t('Quotations') },
     ];
 
     // Watch for locale changes and update the navigation items accordingly
