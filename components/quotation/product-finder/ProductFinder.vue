@@ -1,7 +1,8 @@
 <script setup lang="ts">
     import {useAuthStore} from "~/store/auth";
     import {useToastStore} from "~/store/toast";
-    import debounce from "lodash.debounce"
+    import debounce from "lodash.debounce";
+    import { useI18n } from 'vue-i18n';
 
     const props = defineProps({
         onProductAdd: {
@@ -9,6 +10,8 @@
             required: true
         }
     });
+
+    const { t } = useI18n()
     const config = useRuntimeConfig();
     const { toast } = useToastStore();
     const authStore = useAuthStore();
@@ -183,7 +186,7 @@
         <v-row>
             <v-col class="pr-0">
                 <v-select
-                    label="Select Product Type"
+                    :label="t('quotation.create.Select-Product-Type')"
                     v-model="selectedProductType"
                     :items="productTypes"
                     hide-details
@@ -208,7 +211,7 @@
                         <v-card-text>
                             <div>
                                 <v-label>
-                                    Start Date
+                                  "t('quotation.create.start-date')"
                                 </v-label>
                                 <v-text-field
                                     v-model="startDateFilterTemp"

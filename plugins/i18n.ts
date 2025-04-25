@@ -24,8 +24,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         messages[lang][section][key] = module.default;
     }
 
-    console.log('✅ Loaded translations:', JSON.stringify(messages, null, 2));
-
     const i18n = createI18n({
         legacy: false,
         locale: 'en',

@@ -1,76 +1,75 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useToastStore } from '~/store/toast';
-import { rules } from '~/utils/userValidation';
-import {  useLocaleRoute } from '#i18n';
-import { useI18n } from 'vue-i18n';
+    import { ref } from 'vue';
+    import { useToastStore } from '~/store/toast';
+    import { rules } from '~/utils/userValidation';
+    import { useI18n } from 'vue-i18n';
+    import {  useLocaleRoute } from '#i18n';
 
-const config = useRuntimeConfig();
-const { toast } = useToastStore();
-const localeRoute = useLocaleRoute();
+    const config = useRuntimeConfig();
+    const { toast } = useToastStore();
+    const { t } = useI18n();
+    const localeRoute = useLocaleRoute();
 
-let loading = ref(false);
-let firstname = ref("");
-let surname = ref("");
-let email = ref("");
-let phone = ref("");
-let password = ref("");
-let passwordConfirm = ref("");
-let showPassword = ref(false);
+    // Form values
+    const firstname = ref('');
+    const surname = ref('');
+    const email = ref('');
+    const phone = ref('');
+    const password = ref('');
+    const passwordConfirm = ref('');
+    const showPassword = ref(false);
+    const loading = ref(false);
 
-const { t } = useI18n();
+    // Validate check
+    function validateFormSubmit(): boolean {
+      let valid = true;
 
-function validateFormSubmit(): boolean {
-  let valid = true;
+      if (rules.required(firstname.value) !== true) valid = false;
+      if (rules.required(surname.value) !== true) valid = false;
+      if (rules.required(email.value) !== true) valid = false;
+      if (rules.email(email.value) !== true) valid = false;
+      if (rules.required(password.value) !== true) valid = false;
+      if (rules.passwordStrength(password.value) !== true) valid = false;
+      if (rules.passwordLength(password.value) !== true) valid = false;
+      if (rules.required(passwordConfirm.value) !== true) valid = false;
 
-  if (rules.required(firstname.value) !== true) valid = false;
-  if (rules.required(surname.value) !== true) valid = false;
-  if (rules.required(email.value) !== true) valid = false;
-  if (rules.email(email.value) !== true) valid = false;
-  if (rules.required(password.value) !== true) valid = false;
-  if (rules.passwordStrength(password.value) !== true) valid = false;
-  if (rules.passwordLength(password.value) !== true) valid = false;
-  if (rules.required(passwordConfirm.value) !== true) valid = false;
+      const passwordMatchResult = rules.passwordMatch(() => password.value)(passwordConfirm.value);
+      if (passwordMatchResult !== true) valid = false;
 
-  const passwordMatchResult = rules.passwordMatch(() => password.value)(passwordConfirm.value);
-  if (passwordMatchResult !== true) valid = false;
-
-  return valid;
-}
-
-async function submitForm(): Promise<void> {
-  if (!validateFormSubmit()) return;
-
-  loading.value = true;
-  const backendBaseUrl = config.public.backendBaseUrl;
-
-  try {
-    const res = await $fetch(backendBaseUrl + '/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        firstname: firstname.value,
-        surname: surname.value,
-        email: email.value,
-        phone: phone.value,
-        password: password.value,
-      }
-    });
-
-    if (res.success) {
-      toast(t("AccountCreatedSuccessfully"));
-      navigateTo("/auth/login");
-    } else {
-      toast(res.message || 'Registration failed. Please try again.', 'error');
+      return valid;
     }
-  } catch (error: any) {
-    toast('Something went wrong. Please try again.', 'error');
-  } finally {
-    loading.value = false;
-  }
-}
-</script>
 
+    // Submit
+    async function submitForm(): Promise<void> {
+        if (!validateFormSubmit()) return;
+        loading.value = true;
+
+        try {
+            const res = await $fetch(backendBaseUrl + '/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: {
+                firstname: firstname.value,
+                surname: surname.value,
+                email: email.value,
+                phone: phone.value,
+                password: password.value,
+              }
+            });
+
+            if (res.success) {
+              toast(t("AccountCreatedSuccessfully"));
+              navigateTo("/auth/login");
+            } else {
+              toast(res.message || t('RegistrationFailed'), 'error');
+            }
+        } catch (error: any) {
+            toast(t('SomethingWentWrong'), 'error');
+        } finally {
+            loading.value = false;
+        }
+    }
+</script>
 
 <template>
   <div class="flex justify-center align-content-center h-100">
@@ -127,6 +126,7 @@ async function submitForm(): Promise<void> {
           <v-btn
               :loading="loading"
               class="mt-2"
+              :text="t('Register')"
               type="submit"
               block
               color="primary"
@@ -144,6 +144,3 @@ async function submitForm(): Promise<void> {
     </v-card>
   </div>
 </template>
-
-<style scoped>
-</style>
