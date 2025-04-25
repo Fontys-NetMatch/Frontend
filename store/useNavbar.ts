@@ -1,10 +1,13 @@
 import { useAuthStore } from '~/store/auth';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useLocaleRoute } from "#i18n";
 
 export const useNavbar = () => {
     const authStore = useAuthStore();
     const router = useRouter();
+    const { t, locale } = useI18n();
+    const localeRoute = useLocaleRoute();
 
     const navigationItems = [
         { label: 'Home', to: '/', label: t('Home') },
@@ -22,16 +25,14 @@ export const useNavbar = () => {
     });
 
     const signIn = () => {
-        const { locale } = useI18n(); // Get the current locale
         const route = `/${locale.value}/auth/login`; // Construct the route with the locale
-        router.push(route);
+        router.push(route).then(r => {});
     };
 
     const signOut = () => {
         authStore.logout();
-        const { locale } = useI18n(); // Get the current locale
         const route = `/${locale.value}/auth/login`; // Construct the route with the locale
-        router.push(route);
+        router.push(route).then(r => {});
     };
 
     return {

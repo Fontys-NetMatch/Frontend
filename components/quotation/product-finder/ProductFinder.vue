@@ -24,7 +24,7 @@
     const productTypes = ref([]);
     const products = ref([]);
 
-    const selectedProductType = ref('All Product Types');
+    const selectedProductType = ref(-1);
     const filterMenu = ref(false);
     const productTypeSearch = ref('');
     const debouncedSearchQuery = debounce(() => {
@@ -304,6 +304,7 @@
             placeholder="Search..."
             hide-details
             v-model="productTypeSearch"
+            @input="debouncedSearchQuery"
         ></v-text-field>
 
         <v-divider></v-divider>

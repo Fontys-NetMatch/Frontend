@@ -2,9 +2,7 @@
     import { useI18n } from 'vue-i18n';
     const { t } = useI18n();
 
-    import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
-    import ProductFinder from "~/components/quotation/create/ProductFinder.vue";
     import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
 
     const quotation = ref({
