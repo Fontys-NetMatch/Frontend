@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-    import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
+import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
+import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
 
     const quotation = ref({
         id: 432498326437,
@@ -75,14 +76,13 @@
 
         <template v-slot:item.2 class="stepper-item-panel">
             <div class="stepper-item-panel">
-                <v-row>
-                    <v-col>
+2
+              
                         Klant Gegevens
-                    </v-col>
-                    <v-col cols="auto">
 
-                    </v-col>
-                </v-row>
+                        <CustomerDetails />
+
+
             </div>
         </template>
 
