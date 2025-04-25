@@ -24,7 +24,7 @@
                 v-model="customer.phone"
                 label="Phone"
             ></v-text-field>
-            <v-btn @click="submitCustomer">Next</v-btn>
+           
         </v-form>
     </div>
 </template>
