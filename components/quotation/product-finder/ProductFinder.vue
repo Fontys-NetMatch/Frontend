@@ -1,25 +1,30 @@
 <script setup lang="ts">
-    import {useAuthStore} from "~/store/auth";
     import {useToastStore} from "~/store/toast";
     import debounce from "lodash.debounce"
+    import ProductType from "~/models/productType/ProductType";
+    import QuotationProduct from "~/models/quotation/QuotationProduct";
+    import type ProductDate from "~/models/productDate/ProductDate";
+    import type Product from "~/models/product/Product";
+    import ProductService from "~/services/productService";
+    import ProductTypeService from "~/services/productTypeService";
+    import QuotationProductType from "~/models/quotation/QuotationProductType";
 
     const props = defineProps({
         onProductAdd: {
-            type: Function,
+            type: Function as PropType<(product: QuotationProduct, productDate: ProductDate) => void>,
             required: true
         }
     });
-    const config = useRuntimeConfig();
     const { toast } = useToastStore();
-    const authStore = useAuthStore();
-    let backendBaseUrl = config.public.backendBaseUrl;
 
-    const toCurrency = (value: string) => {
-        return value.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
-    }
+    const toCurrency = (value: number) =>
+        Number(value).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
 
-    const productTypes = ref([]);
-    const products = ref([]);
+    const productTypes = ref([] as {
+        value: number;
+        title: string;
+    }[]);
+    const products = ref([] as QuotationProduct[]);
 
     const selectedProductType = ref(-1);
     const filterMenu = ref(false);
@@ -39,39 +44,42 @@
     const minPersonCountFilter = ref(1);
 
     const fetchProductTypes = () => {
-        $fetch(backendBaseUrl + '/product-type', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': "Bearer " + authStore.jwtToken
+
+        ProductTypeService.getProductTypes().then((response: ProductType[] | null) => {
+            if(response === null){
+                toast('Error getting product types', 'error');
+                return;
             }
-        })
-            .then(res => {
-                if(!res.success){
-                    toast(res.message, 'error');
+
+            productTypes.value.push({
+                value: -1,
+                title: "All Product Types",
+            });
+
+            response.forEach((productType: ProductType) => {
+                let translation = productType.translations.find(translation => translation.langIsoCode === "en");
+                if(translation === undefined){
                     return;
                 }
 
                 productTypes.value.push({
-                    value: -1,
-                    title: "All Product Types",
+                    value: productType.id,
+                    title: translation.name,
                 });
-
-                res.productTypes.forEach(productType => {
-                    let translation = productType.translations.find(translation => translation.langIsoCode === "en");
-
-                    productTypes.value.push({
-                        value: productType.id,
-                        title: translation.name,
-                    });
-                });
-            }).catch(err => {
-                toast('Error getting product types', 'error');
-                console.log(err);
             });
+        });
     }
+
     const fetchProducts = () => {
-        let queryParams = {};
+        let queryParams = {} as {
+            typeId: number|undefined,
+            startDateTime: string|undefined,
+            endDateTime: string|undefined,
+            minPrice: number|undefined,
+            maxPrice: number|undefined,
+            minPeople: number|undefined,
+            searchQuery: string|undefined
+        };
         if(selectedProductType.value != -1){
             queryParams['typeId'] = selectedProductType.value;
         }
@@ -92,50 +100,46 @@
             queryParams['searchQuery'] = productTypeSearch.value;
         }
 
-        $fetch(backendBaseUrl + '/product?' + new URLSearchParams(queryParams), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': "Bearer " + authStore.jwtToken
-            }
-        })
-            .then(res => {
-                if(!res.success){
-                    toast(res.message, 'error');
-                    return;
-                }
-                if(res.statusCode != 200){
-                    return;
-                }
-
-                products.value = [];
-                res.products.forEach(product => {
-                    let productType = product.productType;
-                    let productTypeTranslation = productType.translations.find(translation => translation.langIsoCode === "en");
-
-                    let translation = product.translations.find(translation => translation.langIsoCode === "en");
-                    let dates = product.dates;
-
-                    let minPrice = Math.min(...dates.map(date => date.price));
-                    let maxPrice = Math.max(...dates.map(date => date.price));
-
-                    products.value.push({
-                        id: product.id,
-                        name: translation.name,
-                        description: translation.description,
-                        type: productTypeTranslation.name,
-                        tags: translation.tags,
-                        startLocation: product.startLocation,
-                        endLocation: product.endLocation,
-                        minPrice: minPrice,
-                        maxPrice: maxPrice,
-                        dates: dates
-                    });
-                });
-            }).catch(err => {
+        ProductService.getProducts(queryParams).then(response => {
+            if(response === null){
                 toast('Error getting products', 'error');
-                console.log(err);
-            });
+                return;
+            }
+
+            products.value = [];
+            response?.forEach((p: Product) => {
+                let translation = p.translations.find(translation => translation.langIsoCode === "en");
+                if(translation === undefined){
+                    return;
+                }
+
+                let productTypeTranslation = p.productType.translations.find(translation => translation.langIsoCode === "en");
+                if(productTypeTranslation === undefined){
+                    return;
+                }
+
+                let minPrice = Math.min(...p.dates.map((date: ProductDate) => date.price));
+                let maxPrice = Math.max(...p.dates.map((date: ProductDate) => date.price));
+
+                products.value.push(new QuotationProduct(
+                    p.id,
+                    translation.name,
+                    translation.description,
+                    new QuotationProductType(
+                        p.productType.id,
+                        productTypeTranslation.langIsoCode,
+                        productTypeTranslation.name,
+                        productTypeTranslation.isActive
+                    ),
+                    translation.tags,
+                    p.startLocation,
+                    p.endLocation,
+                    minPrice,
+                    maxPrice,
+                    p.dates
+                ));
+            })
+        });
     }
 
     const resetFilters = () => {
@@ -169,7 +173,7 @@
         fetchProducts();
     });
 
-    const selectProductDate = (product, productDate) => {
+    const selectProductDate = (product: QuotationProduct, productDate: ProductDate) => {
         if(props.onProductAdd === undefined){
             throw new Error("onProductAdd is not defined");
         }
@@ -359,7 +363,7 @@
                                     text-color="white"
                                     size="small"
                                 >
-                                    {{ item.type }}
+                                    {{ item.type.name }}
                                 </v-chip>
                                 <v-chip
                                     text-color="white"

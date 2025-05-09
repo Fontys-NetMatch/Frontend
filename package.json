@@ -32,6 +32,7 @@
     "vuetify-nuxt-module": "^0.18.3"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "vite-plugin-vuetify": "^2.1.0",
     "vuetify": "^3.7.16"
   }
