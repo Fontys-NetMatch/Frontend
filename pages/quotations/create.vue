@@ -4,6 +4,10 @@
 
     import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
+    import ExportPdf  from "~/components/quotation/PDF/ExportPdf.vue";
+
+
+    import { ref } from 'vue';
 
     const quotation = ref({
         id: 432498326437,
@@ -50,6 +54,7 @@
         console.log(quotation.value);
     };
 
+
 </script>
 
 <template>
@@ -89,6 +94,13 @@
                         {{ t('afronden') }} </v-col>
                     <v-col cols="auto">
                         {{ t('overzicht-offerte-met-totaal-prijs') }} </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="auto">
+
+                            <ExportPdf />
+
+                    </v-col>
                 </v-row>
             </div>
         </template>
