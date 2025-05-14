@@ -8,6 +8,28 @@ const downloadPdf = async (quotationId: number) => {
       }
     });
 
+    const showprice = ref('');
+
+// Fetch function to get the price
+    const getFlatCommissionPrice = async () => {
+      try {
+        const response = await fetch(`/api/quotations/${quotationId}/flatcommision`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('jwt')}`
+          },
+          body: JSON.stringify(0) // sending the flat commission (0 in this case)
+        });
+
+        const data = await response.json();
+        showprice.value = data.price; // Extract the price from the response
+      } catch (error) {
+        console.error(error);
+        showprice.value = 'Error fetching price'; // Display an error if the fetch fails
+      }
+    };
+
     const contentType = response.headers.get('Content-Type') || '';
 
     if (contentType.includes('application/pdf')) {
@@ -38,5 +60,6 @@ const downloadPdf = async (quotationId: number) => {
 <template>
   <v-btn color="primary" @click="downloadPdf(432498326437)">
     Download PDF
+    <p>Current price: {{ showprice.value }}</p>
   </v-btn>
 </template>
