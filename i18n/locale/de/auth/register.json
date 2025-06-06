@@ -1,0 +1,9 @@
+{
+  "login": "anmelden",
+  "emailaddress": "E-Mail-Adresse",
+  "firstname": "Vorname",
+  "surname": "Nachname",
+  "phone": "Telefon",
+  "passwordconfirm": "Passwort bestätigen",
+  "logintoaccount": "ins Konto einloggen"
+}

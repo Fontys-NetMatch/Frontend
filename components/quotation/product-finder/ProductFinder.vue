@@ -1,0 +1,597 @@
+<script setup lang="ts">
+    import {useAuthStore} from "~/store/auth";
+    import {useToastStore} from "~/store/toast";
+    import debounce from "lodash.debounce";
+    import { useI18n } from 'vue-i18n';
+
+    const props = defineProps({
+        onProductAdd: {
+            type: Function,
+            required: true
+        }
+    });
+
+    const { t } = useI18n()
+    const config = useRuntimeConfig();
+    const { toast } = useToastStore();
+    const authStore = useAuthStore();
+    let backendBaseUrl = config.public.backendBaseUrl;
+
+    const toCurrency = (value: string) => {
+        return value.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
+    }
+
+    const productTypes = ref([]);
+    const products = ref([]);
+
+    const selectedProductType = ref(-1);
+    const filterMenu = ref(false);
+    const productTypeSearch = ref('');
+    const debouncedSearchQuery = debounce(() => {
+        fetchProducts();
+    }, 500);
+
+    const startDateFilterTemp = ref('');
+    const endDateFilterTemp = ref('');
+    const priceRangeFilterTemp = ref([0, 1000]);
+    const minPersonCountFilterTemp = ref(1);
+
+    const startDateFilter = ref('');
+    const endDateFilter = ref('');
+    const priceRangeFilter = ref([0, 1000]);
+    const minPersonCountFilter = ref(1);
+
+    const fetchProductTypes = () => {
+        $fetch(backendBaseUrl + '/product-type', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + authStore.jwtToken
+            }
+        })
+            .then(res => {
+                if(!res.success){
+                    toast(res.message, 'error');
+                    return;
+                }
+
+                productTypes.value.push({
+                    value: -1,
+                    title: "All Product Types",
+                });
+
+                res.productTypes.forEach(productType => {
+                    let translation = productType.translations.find(translation => translation.langIsoCode === "en");
+
+                    productTypes.value.push({
+                        value: productType.id,
+                        title: translation.name,
+                    });
+                });
+            }).catch(err => {
+                toast('Error getting product types', 'error');
+                console.log(err);
+            });
+    }
+    const fetchProducts = () => {
+        let queryParams = {};
+        if(selectedProductType.value != -1){
+            queryParams['typeId'] = selectedProductType.value;
+        }
+        if(startDateFilter.value.length > 0){
+            queryParams['startDateTime'] = startDateFilter.value;
+        }
+        if(endDateFilter.value.length > 0){
+            queryParams['endDateTime'] = endDateFilter.value;
+        }
+        if(priceRangeFilter.value.length > 0){
+            queryParams['minPrice'] = priceRangeFilter.value[0];
+            queryParams['maxPrice'] = priceRangeFilter.value[1];
+        }
+        if(minPersonCountFilter.value > 0){
+            queryParams['minPeople'] = minPersonCountFilter.value;
+        }
+        if(productTypeSearch.value.length > 0){
+            queryParams['searchQuery'] = productTypeSearch.value;
+        }
+
+        $fetch(backendBaseUrl + '/product?' + new URLSearchParams(queryParams), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + authStore.jwtToken
+            }
+        })
+            .then(res => {
+                if(!res.success){
+                    toast(res.message, 'error');
+                    return;
+                }
+                if(res.statusCode != 200){
+                    return;
+                }
+
+                products.value = [];
+                res.products.forEach(product => {
+                    let productType = product.productType;
+                    let productTypeTranslation = productType.translations.find(translation => translation.langIsoCode === "en");
+
+                    let translation = product.translations.find(translation => translation.langIsoCode === "en");
+                    let dates = product.dates;
+
+                    let minPrice = Math.min(...dates.map(date => date.price));
+                    let maxPrice = Math.max(...dates.map(date => date.price));
+
+                    products.value.push({
+                        id: product.id,
+                        name: translation.name,
+                        description: translation.description,
+                        type: productTypeTranslation.name,
+                        tags: translation.tags,
+                        startLocation: product.startLocation,
+                        endLocation: product.endLocation,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        dates: dates
+                    });
+                });
+            }).catch(err => {
+                toast('Error getting products', 'error');
+                console.log(err);
+            });
+    }
+
+    const resetFilters = () => {
+        // Close the filter menu
+        filterMenu.value = false;
+
+        startDateFilterTemp.value = '';
+        endDateFilterTemp.value = '';
+        priceRangeFilterTemp.value = [0, 1000];
+        minPersonCountFilterTemp.value = 1;
+
+        startDateFilter.value = '';
+        endDateFilter.value = '';
+        priceRangeFilter.value = [0, 1000];
+        minPersonCountFilter.value = 1;
+    }
+    const applyFilters = () => {
+        // Close the filter menu
+        filterMenu.value = false;
+
+        startDateFilter.value = startDateFilterTemp.value;
+        endDateFilter.value = endDateFilterTemp.value;
+        priceRangeFilter.value = priceRangeFilterTemp.value;
+        minPersonCountFilter.value = minPersonCountFilterTemp.value;
+    }
+
+    fetchProductTypes();
+    fetchProducts();
+
+    watch([selectedProductType, startDateFilter, endDateFilter, priceRangeFilter, minPersonCountFilter], () => {
+        fetchProducts();
+    });
+
+    const selectProductDate = (product, productDate) => {
+        if(props.onProductAdd === undefined){
+            throw new Error("onProductAdd is not defined");
+        }
+        props.onProductAdd(product, productDate);
+    }
+
+</script>
+
+<template>
+    <div class="product-finder">
+        <v-row>
+            <v-col class="pr-0">
+                <v-select
+                    :label="t('quotation.create.Select-Product-Type')"
+                    v-model="selectedProductType"
+                    :items="productTypes"
+                    hide-details
+                ></v-select>
+            </v-col>
+            <v-col class="pl-2" cols="auto">
+                <v-menu
+                    v-model="filterMenu"
+                    :close-on-content-click="false"
+                >
+                    <template v-slot:activator="{ props }">
+                        <v-btn
+                            icon="mdi-filter"
+                            rounded
+                            width="56"
+                            height="56"
+                            v-bind="props"
+                        ></v-btn>
+                    </template>
+
+                    <v-card min-width="450" width="fit-content">
+                        <v-card-text>
+                            <div>
+                                <v-label>
+                                  "t('quotation.create.start-date')"
+                                </v-label>
+                                <v-text-field
+                                    v-model="startDateFilterTemp"
+                                    type="date"
+                                    hide-details
+                                ></v-text-field>
+                            </div>
+                            <div class="mt-2">
+                                <v-label>
+                                    End Date
+                                </v-label>
+                                <v-text-field
+                                    v-model="endDateFilterTemp"
+                                    type="date"
+                                    hide-details
+                                ></v-text-field>
+                            </div>
+                            <div class="mt-2">
+                                <v-label>
+                                    Price Range
+                                </v-label>
+                                <v-range-slider
+                                    v-model="priceRangeFilterTemp"
+                                    :max="1000"
+                                    :min="0"
+                                    :step="1"
+                                    class="align-center mx-0"
+                                    hide-details
+                                >
+                                    <template v-slot:prepend>
+                                        <v-text-field
+                                            v-model="priceRangeFilterTemp[0]"
+                                            density="compact"
+                                            style="width: 85px"
+                                            type="number"
+                                            variant="outlined"
+                                            hide-details
+                                            single-line
+                                        ></v-text-field>
+                                    </template>
+                                    <template v-slot:append>
+                                        <v-text-field
+                                            v-model="priceRangeFilterTemp[1]"
+                                            density="compact"
+                                            style="width: 85px"
+                                            type="number"
+                                            variant="outlined"
+                                            hide-details
+                                            single-line
+                                        ></v-text-field>
+                                    </template>
+                                </v-range-slider>
+                            </div>
+                            <div class="mt-2">
+                                <v-label>
+                                    Min. Aantal Personen
+                                </v-label>
+                                <v-text-field
+                                    v-model="minPersonCountFilterTemp"
+                                    :min="1"
+                                    type="number"
+                                    hide-details
+                                ></v-text-field>
+                            </div>
+
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+
+                            <v-btn
+                                color="danger"
+                                @click="resetFilters"
+                            >
+                                Clear
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                @click="applyFilters"
+                            >
+                                Apply
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-menu>
+            </v-col>
+        </v-row>
+        <v-text-field
+            class="mt-2"
+            placeholder="Search..."
+            hide-details
+            v-model="productTypeSearch"
+            @input="debouncedSearchQuery"
+        ></v-text-field>
+
+        <v-divider></v-divider>
+
+        <v-list
+            style="height: calc(100vh - 450px); overflow-y: auto;"
+        >
+            <template v-if="products.length > 0">
+                <v-list-item
+                    v-for="(item, index) in products"
+                    :key="index"
+                    class="px-0"
+                >
+                    <v-card
+                        variant="tonal"
+                        class="w-100"
+                    >
+                        <v-card-title>
+                            <v-row>
+                                <v-col>
+                                    {{ item.name }}
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-chip
+                                        color="primary"
+                                        text-color="white"
+                                    >
+                                        <template v-if="item.minPrice == item.maxPrice">
+                                            {{ toCurrency(item.minPrice) }}
+                                        </template>
+                                        <template v-else>
+                                            {{ toCurrency(item.minPrice) }} - {{ toCurrency(item.maxPrice) }}
+                                        </template>
+                                    </v-chip>
+                                </v-col>
+                            </v-row>
+                        </v-card-title>
+                        <v-card-subtitle>
+                            {{ item.description }}
+                        </v-card-subtitle>
+                        <v-card-text>
+                            <v-row>
+                                <v-col v-if="item.startLocation != null">
+                                    <h6>Departure:</h6>
+                                    <span>{{ item.startLocation }}</span>
+                                </v-col>
+                                <v-col v-if="item.endLocation != null">
+                                    <h6>Arrival:</h6>
+                                    <span>{{ item.endLocation }}</span>
+                                </v-col>
+                            </v-row>
+                            <div class="d-flex gap-1 mt-3">
+                                <v-chip
+                                    color="primary"
+                                    text-color="white"
+                                    size="small"
+                                >
+                                    {{ item.type }}
+                                </v-chip>
+                                <v-chip
+                                    text-color="white"
+                                    size="small"
+                                    v-for="tag in item.tags"
+                                >
+                                    {{ tag }}
+                                </v-chip>
+                            </div>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-dialog max-width="500">
+                                <template v-slot:activator="{ props: activatorProps }">
+                                    <v-btn
+                                        color="primary"
+                                        v-bind="activatorProps"
+                                    >
+                                        Add to Quotation
+                                    </v-btn>
+                                </template>
+
+                                <template v-slot:default="{ isActive }">
+                                    <v-card>
+                                        <v-card-title>
+                                            <v-row>
+                                                <v-col>
+                                                    Select Time Slot
+                                                </v-col>
+                                                <v-col cols="auto">
+                                                    <v-btn
+                                                        icon
+                                                        @click="isActive.value = false"
+                                                        class="ml-auto bg-transparent"
+                                                        variant="plain"
+                                                    >
+                                                        <v-icon>mdi-close</v-icon>
+                                                    </v-btn>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card-title>
+                                        <v-card-text class="date-select-content">
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                            <v-card
+                                                v-for="itemDate in item.dates"
+                                                :key="itemDate.id"
+                                                class="mb-2"
+                                                hover
+                                                @click="isActive.value = false;selectProductDate(item, itemDate)"
+                                            >
+                                                <v-card-title>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <NuxtTime
+                                                                :datetime="itemDate.startDate"
+                                                                month="long"
+                                                                day="numeric"
+                                                                year="numeric"
+                                                            />
+                                                        </v-col>
+                                                        <v-col cols="auto">
+                                                            <v-chip
+                                                                color="primary"
+                                                                text-color="white"
+                                                            >
+                                                                {{ itemDate.price }}
+                                                            </v-chip>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <v-row>
+                                                        <v-col v-if="itemDate.startDate != null">
+                                                            <h6>Departure:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.startDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col v-if="itemDate.endDate != null">
+                                                            <h6>Arrival:</h6>
+                                                            <span>
+                                                                <NuxtTime
+                                                                    :datetime="itemDate.endDate"
+                                                                    month="long"
+                                                                    day="numeric"
+                                                                    year="numeric"
+                                                                />
+                                                            </span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-text>
+                                            </v-card>
+                                        </v-card-text>
+                                    </v-card>
+                                </template>
+                            </v-dialog>
+                        </v-card-actions>
+                    </v-card>
+                </v-list-item>
+            </template>
+            <template v-else>
+                <v-list-item
+                    class="px-0 text-center"
+                >
+                    No products found
+                </v-list-item>
+            </template>
+        </v-list>
+    </div>
+</template>
+
+<style scoped>
+    .product-finder{
+        min-width: 450px;
+    }
+    .date-select-content{
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+</style>

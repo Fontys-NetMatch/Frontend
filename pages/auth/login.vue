@@ -2,17 +2,18 @@
     import LoginForm from "~/components/auth/LoginForm.vue";
     import {watchEffect} from "vue";
     import {useAuthStore} from "~/store/auth";
-
+    import { useI18n } from 'vue-i18n';
+    const { t } = useI18n();
+    // Redirect to home page if user is already logged in
     watchEffect(() => {
         const authStore = useAuthStore();
-        console.log(authStore);
         if (authStore.jwtToken !== undefined) {
             navigateTo("/");
         }
     });
 
     useSeoMeta({
-        title: "Login"
+        title: t('Login')
     });
 </script>
 
