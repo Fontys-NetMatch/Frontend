@@ -1,17 +1,17 @@
-export default class User{
+export default class Customer {
     public id: number;
     public firstname: string;
     public surname: string;
     public email: string;
-    public phone: string|null;
+    public phone: string | null;
 
     constructor(
         id: number,
         firstname: string,
         surname: string,
         email: string,
-        phone: string|null
-    ){
+        phone: string | null
+    ) {
         this.id = id;
         this.firstname = firstname;
         this.surname = surname;

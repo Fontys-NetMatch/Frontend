@@ -1,0 +1,9 @@
+{
+  "login": "inloggen",
+  "emailaddress": "e-mailadres",
+  "firstname": "voornaam",
+  "surname": "achternaam",
+  "phone": "telefoon",
+  "passwordconfirm": "bevestig wachtwoord",
+  "logintoaccount": "inloggen op account"
+}
