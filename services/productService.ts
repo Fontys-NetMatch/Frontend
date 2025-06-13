@@ -3,7 +3,6 @@ import {useAuthStore} from "~/store/auth";
 import ProductDate from "~/models/productDate/ProductDate";
 import Product from "~/models/product/Product";
 import ProductType from "~/models/productType/ProductType";
-import ProductTypeTranslation from "~/models/productType/ProductTypeTranslation";
 import ProductTranslation from "~/models/product/ProductTranslation";
 
 export default class ProductService {
@@ -65,16 +64,7 @@ export default class ProductService {
                         p.productTypeId,
                         new ProductType(
                             p.productType.id,
-                            p.productType.isActive,
-                            p.productType.translations.map((translation: any) =>
-                                new ProductTypeTranslation(
-                                    translation.id,
-                                    translation.productTypeId,
-                                    translation.langIsoCode,
-                                    translation.name,
-                                    translation.isActive
-                                )
-                            )
+                            p.productType.name
                         ),
                         p.startLocation,
                         p.endLocation,

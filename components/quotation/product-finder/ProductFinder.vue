@@ -1,12 +1,10 @@
 <script setup lang="ts">
     import {useToastStore} from "~/store/toast";
     import debounce from "lodash.debounce"
-    import ProductType from "~/models/productType/ProductType";
     import QuotationProduct from "~/models/quotation/QuotationProduct";
     import type ProductDate from "~/models/productDate/ProductDate";
     import type Product from "~/models/product/Product";
     import ProductService from "~/services/productService";
-    import ProductTypeService from "~/services/productTypeService";
     import QuotationProductType from "~/models/quotation/QuotationProductType";
 
     const props = defineProps({
@@ -20,10 +18,6 @@
     const toCurrency = (value: number) =>
         Number(value).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
 
-    const productTypes = ref([] as {
-        value: number;
-        title: string;
-    }[]);
     const products = ref([] as QuotationProduct[]);
 
     const selectedProductType = ref(-1);
@@ -42,33 +36,6 @@
     const endDateFilter = ref('');
     const priceRangeFilter = ref([0, 1000]);
     const minPersonCountFilter = ref(1);
-
-    const fetchProductTypes = () => {
-
-        ProductTypeService.getProductTypes().then((response: ProductType[] | null) => {
-            if(response === null){
-                toast('Error getting product types', 'error');
-                return;
-            }
-
-            productTypes.value.push({
-                value: -1,
-                title: "All Product Types",
-            });
-
-            response.forEach((productType: ProductType) => {
-                let translation = productType.translations.find(translation => translation.langIsoCode === "en");
-                if(translation === undefined){
-                    return;
-                }
-
-                productTypes.value.push({
-                    value: productType.id,
-                    title: translation.name,
-                });
-            });
-        });
-    }
 
     const fetchProducts = () => {
         let queryParams = {} as {
@@ -113,11 +80,6 @@
                     return;
                 }
 
-                let productTypeTranslation = p.productType.translations.find(translation => translation.langIsoCode === "en");
-                if(productTypeTranslation === undefined){
-                    return;
-                }
-
                 let minPrice = Math.min(...p.dates.map((date: ProductDate) => date.price));
                 let maxPrice = Math.max(...p.dates.map((date: ProductDate) => date.price));
 
@@ -127,9 +89,7 @@
                     translation.description,
                     new QuotationProductType(
                         p.productType.id,
-                        productTypeTranslation.langIsoCode,
-                        productTypeTranslation.name,
-                        productTypeTranslation.isActive
+                        p.productType.name
                     ),
                     translation.tags,
                     p.startLocation,
@@ -166,7 +126,6 @@
         minPersonCountFilter.value = minPersonCountFilterTemp.value;
     }
 
-    fetchProductTypes();
     fetchProducts();
 
     watch([selectedProductType, startDateFilter, endDateFilter, priceRangeFilter, minPersonCountFilter], () => {
@@ -186,12 +145,12 @@
     <div class="product-finder">
         <v-row>
             <v-col class="pr-0">
-                <v-select
-                    label="Select Product Type"
-                    v-model="selectedProductType"
-                    :items="productTypes"
-                    hide-details
-                ></v-select>
+              <v-text-field
+                  placeholder="Search..."
+                  hide-details
+                  v-model="productTypeSearch"
+                  @input="debouncedSearchQuery"
+              ></v-text-field>
             </v-col>
             <v-col class="pl-2" cols="auto">
                 <v-menu
@@ -300,13 +259,6 @@
                 </v-menu>
             </v-col>
         </v-row>
-        <v-text-field
-            class="mt-2"
-            placeholder="Search..."
-            hide-details
-            v-model="productTypeSearch"
-            @input="debouncedSearchQuery"
-        ></v-text-field>
 
         <v-divider></v-divider>
 
