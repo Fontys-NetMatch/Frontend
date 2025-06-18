@@ -116,7 +116,7 @@
         </template>
 
         <template v-slot:item.2 class="stepper-item-panel">
-            <div class="stepper-item-panel">
+          <div class="stepper-item-panel" style="min-height: 100vh; padding: 20px;">
                 <v-row>
                   <CustomerDetails />
                     <v-col cols="auto">

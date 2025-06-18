@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div style="margin-left: 20px; min-height: 100vh;">
         <h3>Customer Details</h3>
         <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
