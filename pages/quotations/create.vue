@@ -6,6 +6,8 @@
     import QuotationItem from "~/models/quotation/QuotationItem";
     import Quotation from "~/models/quotation/Quotation";
     import Customer from "~/models/Customer";
+    import ExportPdf from "~/components/quotation/PDF/ExportPdf.vue";
+    import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
 
     const quotation = ref(new Quotation(
         432498326437,
@@ -116,9 +118,7 @@
         <template v-slot:item.2 class="stepper-item-panel">
             <div class="stepper-item-panel">
                 <v-row>
-                    <v-col>
-                        Klant Gegevens
-                    </v-col>
+                  <CustomerDetails />
                     <v-col cols="auto">
 
                     </v-col>
@@ -136,6 +136,13 @@
                         Overzicht offerte met totaal prijs
                     </v-col>
                 </v-row>
+              <v-row>
+                <v-col cols="auto">
+
+                  <ExportPdf />
+
+                </v-col>
+              </v-row>
             </div>
         </template>
     </v-stepper>

@@ -17,12 +17,14 @@ const getTranslation = (product: any) => {
       || product.translations?.find((t: any) => t.langIsoCode === 'en');
 };
 
+
+
 const fetchInactiveProducts = async () => {
   try {
     const res = await $fetch(`${config.public.backendBaseUrl}/product?isDeleted=true`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${auth.jwtToken}`,
+        Authorization: `Bearer ${auth.jwtToken}`,
         'Content-Type': 'application/json'
       }
     });
@@ -39,7 +41,7 @@ const fetchInactiveProducts = async () => {
   }
 
   catch (error: any) {
-    toast(t('error.somethingwentwrong'), 'error');
+    toast(t('SomethingWentWrong'), 'error');
   }
 
   finally {
@@ -57,13 +59,13 @@ const restoreProduct = async (id: number) => {
       }
     });
 
-    toast(t('product.restore.product-restored-succesfully'), 'success');
+    toast(t('Product restored succesfully'), 'success');
     products.value = products.value.filter(p => p.id !== id);
   }
 
   catch (error: any) {
     console.error("Error while restoring:", error);
-    toast(t('error.somethingwentwrong'), 'error');
+    toast(t('SomethingWentWrong'), 'error');
   }
 };
 
@@ -74,7 +76,7 @@ onMounted(fetchInactiveProducts);
   <div class="flex justify-center">
     <v-card class="mx-auto mt-6" max-width="800">
       <v-card-title>
-        {{ t('product.restore.inactive-products') }}
+        {{ t('Inactive products') }}
       </v-card-title>
 
       <v-card-text>
@@ -93,6 +95,7 @@ onMounted(fetchInactiveProducts);
             <v-list-item-title>
               {{ getTranslation(product)?.name || 'No name' }}
             </v-list-item-title>
+
             <v-list-item-subtitle>
               <div style="white-space: pre-wrap;" class="text-body-2 text--secondary">
                 {{ getTranslation(product)?.description || 'No description' }}
@@ -105,16 +108,17 @@ onMounted(fetchInactiveProducts);
                 style="margin-top: 10px"
                 @click="restoreProduct(product.id)"
             >
-              {{ t('product.restore.restore') }}
+              {{ t('Restore') }}
             </v-btn>
 
           </v-list-item>
         </v-list>
 
         <div v-else class="text-subtitle-1 text-center text-grey">
-          {{ t('product.restore.no-deleted-products') }}
+          {{ t('There are currently no deleted products') }}
         </div>
       </v-card-text>
     </v-card>
   </div>
 </template>
+

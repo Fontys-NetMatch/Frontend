@@ -1,7 +1,6 @@
 import {useToastStore} from "~/store/toast";
 import {useAuthStore} from "~/store/auth";
 import ProductType from "~/models/productType/ProductType";
-import ProductTypeTranslation from "~/models/productType/ProductTypeTranslation";
 
 export default class ProductService {
     public static async getProductTypes(): Promise<ProductType[] | null> {
@@ -28,16 +27,7 @@ export default class ProductService {
                 .map((pt: any) => {
                     return new ProductType(
                         pt.id,
-                        pt.isActive,
-                        pt.translations.map((translation: any) => {
-                            return new ProductTypeTranslation(
-                                translation.id,
-                                translation.productTypeId,
-                                translation.langIsoCode,
-                                translation.name,
-                                translation.isActive
-                            );
-                        })
+                        pt.name
                     );
                 })
                 .filter((qp: ProductType | null): qp is ProductType => qp !== null);
