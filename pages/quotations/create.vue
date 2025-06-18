@@ -5,14 +5,14 @@
     import type QuotationProduct from "~/models/quotation/quotationProduct";
     import QuotationItem from "~/models/quotation/QuotationItem";
     import Quotation from "~/models/quotation/Quotation";
-    import Customer from "~/models/Customer";
+    import customer from "~/models/customer";
     import ExportPdf from "~/components/quotation/PDF/ExportPdf.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
 
     const quotation = ref(new Quotation(
         432498326437,
         0,
-        new Customer(
+        new customer(
             0,
             'John Doe',
             '123 Main St',
@@ -116,7 +116,7 @@
         </template>
 
         <template v-slot:item.2 class="stepper-item-panel">
-            <div class="stepper-item-panel">
+          <div class="stepper-item-panel" style="min-height: 100vh; padding: 20px;">
                 <v-row>
                   <CustomerDetails />
                     <v-col cols="auto">
