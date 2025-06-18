@@ -41,7 +41,7 @@
 
         <!-- Acties -->
         <template v-slot:item.actions="{ item }">
-          <v-btn small color="primary" :to="`/Product/Edit/manage/${item.raw.id}`">✏️ Bewerken</v-btn>
+          <v-btn small color="primary" :to="`/Product/manage/${item.raw.id}`">✏️ Bewerken</v-btn>
           <v-btn small color="error" @click="deleteProduct(item.raw.id)">🗑️ Verwijderen</v-btn>
         </template>
       </v-data-table>
