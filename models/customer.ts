@@ -1,4 +1,4 @@
-export default class Customer{
+export default class customer{
 
     public id: number;
     public firstname: string;

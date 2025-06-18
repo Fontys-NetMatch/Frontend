@@ -5,14 +5,14 @@
     import type QuotationProduct from "~/models/quotation/quotationProduct";
     import QuotationItem from "~/models/quotation/QuotationItem";
     import Quotation from "~/models/quotation/Quotation";
-    import Customer from "~/models/Customer";
+    import customer from "~/models/customer";
     import ExportPdf from "~/components/quotation/PDF/ExportPdf.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
 
     const quotation = ref(new Quotation(
         432498326437,
         0,
-        new Customer(
+        new customer(
             0,
             'John Doe',
             '123 Main St',
