@@ -39,4 +39,26 @@ const downloadPdf = async (quotationId: number) => {
   <v-btn color="primary" @click="downloadPdf(432498326437)">
     Download PDF
   </v-btn>
+
+  <template>
+    <div>
+      <v-btn @click="exportToPDF">📄 Exporteer als PDF</v-btn>
+
+      <!-- Hidden printable content -->
+      <div id="quotation-pdf" style="display: none">
+        <h2>Offerte</h2>
+        <p><strong>Klant:</strong> {{ quotation.customer.firstName }} {{ quotation.customer.lastName }}</p>
+        <p><strong>Email:</strong> {{ quotation.customer.email }}</p>
+        <p><strong>Telefoon:</strong> {{ quotation.customer.phoneNumber }}</p>
+        <p><strong>Prijs:</strong> €{{ quotation.total }}</p>
+
+        <h3>Producten:</h3>
+        <ul>
+          <li v-for="(product, index) in quotation.products" :key="index">
+            {{ product.name }} - €{{ product.price }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </template>
 </template>

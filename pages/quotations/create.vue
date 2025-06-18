@@ -8,6 +8,9 @@
     import type QuotationProduct from "~/models/quotation/QuotationProduct";
     import ExportPdf from "~/components/quotation/PDF/ExportPdf.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
+    import html2pdf from 'html2pdf.js';
+    import { ref , nextTick} from 'vue';
+
 
     const quotation = ref(new Quotation(
         null,
@@ -114,6 +117,32 @@
       console.log("sendEmail");
     }
 
+
+
+
+    const exportToPDF = () => {
+      const element = document.getElementById('quotation-pdf');
+      if (!element) return;
+
+
+      setTimeout(() => {
+        import('html2pdf.js').then((html2pdf) => {
+          html2pdf.default()
+              .set({
+                margin: 0.5,
+                filename: 'offerte.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+              })
+              .from(element)
+              .save()
+              .then(() => {
+              });
+        });
+      }, 100); // slight delay to ensure rendering
+    };
+
 </script>
 
 <template>
@@ -166,7 +195,30 @@
                 </v-row>
                 <v-row justify="end" class="w-100">
                   <v-col cols="auto">
-                    <ExportPdf />
+                    <div>
+                      <v-btn @click="exportToPDF">📄 Exporteer als PDF</v-btn>
+
+                      <!-- Printable content -->
+                      <div
+                          id="quotation-pdf"
+                      >
+                        <h1>Offerte</h1>
+                        <p><strong>Klant:</strong> {{ quotation.customer.firstname }} {{ quotation.customer.surname }}</p>
+                        <p><strong>Email:</strong> {{ quotation.customer.email }}</p>
+
+                        <h2>Producten</h2>
+                        <div v-for="(item, index) in quotation.items" :key="index" style="margin-bottom: 1rem;">
+                          <h3>{{ item.product.name }}</h3>
+                          <p><strong>Type:</strong> {{ item.product.type.name }}</p>
+                          <p><strong>Beschrijving:</strong> {{ item.product.description || 'Geen beschrijving' }}</p>
+                          <p><strong>Prijs:</strong> €{{ item.productDate.price }}</p>
+                          <p><strong>Van:</strong> {{ item.product.startLocation }} <strong>naar</strong> {{ item.product.endLocation }}</p>
+                          <p><strong>Tags:</strong> {{ item.product.tags.join(', ') }}</p>
+                        </div>
+
+                        <h2>Totaalprijs: €{{ quotation.totalPrice }}</h2>
+                      </div>
+                    </div>
                   </v-col>
                   <v-col cols="auto">
                     <v-btn color="primary" @click="sendEmail">
