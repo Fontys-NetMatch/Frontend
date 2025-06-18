@@ -1,4 +1,5 @@
 export default class User{
+
     public id: number;
     public firstname: string;
     public surname: string;
@@ -18,4 +19,5 @@ export default class User{
         this.email = email;
         this.phone = phone;
     }
+
 }

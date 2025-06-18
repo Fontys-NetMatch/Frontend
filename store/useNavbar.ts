@@ -12,15 +12,15 @@ export const useNavbar = () => {
     const navigationItems = [
         { to: '/', label: t('Home') },
         { to: '/product/dashboard', label: t('Products') },
-        { to: '/quotations', label: t('Quotations') },
+        { to: '/quotations/create', label: t('Quotations') },
     ];
 
     // Watch for locale changes and update the navigation items accordingly
     watch(() => locale.value, () => {
-        navigationItems.value = [
+        navigationItems.values = [
             { to: localeRoute('/'), label: t('Home') },
             { to: localeRoute('/product/dashboard'), label: t('Products') },
-            { to: localeRoute('/quotations/dashboard'), label: t('Quotations') },
+            { to: localeRoute('/quotations/create'), label: t('Quotations') },
         ];
     });
 

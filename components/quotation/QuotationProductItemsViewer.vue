@@ -47,6 +47,7 @@
                         <v-card
                             variant="tonal"
                             class="w-100"
+                            image="https://picsum.photos/200/300"
                         >
                             <v-card-title>
                                 <v-row>

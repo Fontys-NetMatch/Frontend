@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileFormComponent from "~/components/User/ProfileForm.vue";
+import DashboardForm from "~/components/quotation/DashboardForm.vue";
 import { watchEffect } from "vue";
 import { useAuthStore } from "~/store/auth";
 
@@ -13,10 +13,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <ProfileFormComponent />
-  </div>
+  <DashboardForm />
 </template>
+
 
 <style scoped>
 </style>
