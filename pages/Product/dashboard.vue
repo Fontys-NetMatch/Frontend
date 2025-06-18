@@ -17,7 +17,13 @@
               dense
               clearable
               variant="outlined"
+              maxlength="500"
+              counter
+              :rules="[
+      v => (!v || v.length >= 3) || 'Minimaal 3 tekens vereist'
+    ]"
               class="ml-4"
+              style="min-width: 300px;"
           />
         </div>
       </v-card-title>
@@ -27,22 +33,47 @@
           :items="computedProducts"
           :search="search"
           :loading="isLoading"
-          loading-text="Laden..."
-          no-data-text="Geen producten gevonden"
-          items-per-page-text="Producten per pagina"
           class="elevation-1"
+          :items-per-page="itemsPerPage"
+          hide-default-footer
       >
-        <!-- Actief status -->
-        <template v-slot:item.isActive="{ item }">
+        <template #top>
+          <v-progress-linear
+              v-if="isLoading"
+              indeterminate
+              color="primary"
+              class="mb-2"
+          />
+        </template>
+
+        <!-- Your custom footer using #bottom slot -->
+        <template #bottom>
+          <div class="d-flex justify-end align-center pa-4">
+            <span class="mr-2">Producten per pagina:</span>
+            <v-select
+                v-model="itemsPerPage"
+                :items="[10, 25, 50, 100]"
+                density="compact"
+                hide-details
+                style="max-width: 100px"
+                variant="outlined"
+            />
+          </div>
+        </template>
+
+        <template #item.isActive="{ item }">
           <v-chip :color="item.isActive ? 'green' : 'red'" dark>
             {{ item.isActive ? 'Actief' : 'Inactief' }}
           </v-chip>
         </template>
 
-        <!-- Acties -->
-        <template v-slot:item.actions="{ item }">
-          <v-btn small color="primary" :to="`/Product/Edit/manage/${item.raw.id}`">✏️ Bewerken</v-btn>
-          <v-btn small color="error" @click="deleteProduct(item.raw.id)">🗑️ Verwijderen</v-btn>
+        <template #item.actions="{ item }">
+          <v-btn size="small" color="primary" :to="`/Product/Edit/manage/${item.id}`">
+            ✏️ Bewerken
+          </v-btn>
+          <v-btn size="small" color="error" @click="deleteProduct(item.id)">
+            🗑️ Verwijderen
+          </v-btn>
         </template>
       </v-data-table>
     </v-card>
@@ -88,6 +119,7 @@ const authStore = useAuthStore()
 const search = ref('')
 const isLoading = ref(false)
 const products = ref<Product[]>([])
+const itemsPerPage = ref(10)
 
 // ✅ Kolommen
 const headers = [
