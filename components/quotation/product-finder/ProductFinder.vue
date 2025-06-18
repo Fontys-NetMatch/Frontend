@@ -275,6 +275,7 @@
                         variant="tonal"
                         class="w-100"
                         image="https://picsum.photos/200/300"
+                        max-width="500px"
                     >
                         <v-card-title>
                             <v-row>
@@ -533,7 +534,7 @@
                 <v-list-item
                     class="px-0 text-center"
                 >
-                    No products found
+                    Loading...
                 </v-list-item>
             </template>
         </v-list>
@@ -554,5 +555,9 @@
       object-fit: cover;
       filter: brightness(10%);
     }
-
+</style>
+<style>
+.v-card__image{
+  opacity: .25;
+}
 </style>

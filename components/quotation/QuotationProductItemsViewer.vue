@@ -48,6 +48,7 @@
                             variant="tonal"
                             class="w-100"
                             image="https://picsum.photos/200/300"
+                            max-width="500px"
                         >
                             <v-card-title>
                                 <v-row>
@@ -131,4 +132,9 @@
             max-width: 600px;
         }
     }
+</style>
+<style>
+.v-card__image{
+  opacity: .25;
+}
 </style>

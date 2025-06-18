@@ -1,25 +1,20 @@
-import type ProductDate from "~/models/productDate/ProductDate";
-import type QuotationProduct from "~/models/quotation/QuotationProduct";
 import type QuotationItem from "~/models/quotation/QuotationItem";
-import type Customer from "~/models/Customer";
+import type Customer from "~/models/customer";
 
 export default class Quotation {
 
-    public id: number;
-    public customerId: number;
+    public id: number|null;
     public customer: Customer;
     public items: QuotationItem[];
     public totalPrice: number;
 
     constructor(
-        id: number,
-        customerId: number,
+        id: number|null,
         customer: Customer,
         items: QuotationItem[],
         totalPrice: number
     ){
         this.id = id;
-        this.customerId = customerId;
         this.customer = customer;
         this.items = items;
         this.totalPrice = totalPrice;

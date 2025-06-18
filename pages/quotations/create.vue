@@ -2,23 +2,25 @@
 
     import ProductFinder from "~/components/quotation/product-finder/ProductFinder.vue";
     import type ProductDate from "~/models/productDate/ProductDate";
-    import type QuotationProduct from "~/models/quotation/quotationProduct";
     import QuotationItem from "~/models/quotation/QuotationItem";
     import Quotation from "~/models/quotation/Quotation";
-    import Customer from "~/models/Customer";
+    import Customer from "~/models/customer";
+    import type QuotationProduct from "~/models/quotation/QuotationProduct";
     import ExportPdf from "~/components/quotation/PDF/ExportPdf.vue";
     import CustomerDetails from "~/components/quotation/customer/CustomerDetails.vue";
 
     const quotation = ref(new Quotation(
-        432498326437,
-        0,
+        null,
         new Customer(
-            0,
-            'John Doe',
-            '123 Main St',
-            'Anytown',
-            'CA',
-            '12345'
+            null,
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
         ),
         [],
         0
@@ -75,7 +77,6 @@
     function updateQuotation(){
         calcTotalPrice();
         quotationItems.value = groupItemsByDate(quotation.value);
-        console.log(quotationItems.value);
     }
 
     function productRemoved(productId: number) {
@@ -86,16 +87,44 @@
         }
     }
 
+    function saveQuotation(){
+      console.log("saveQuotation");
+      console.log(quotation);
+
+
+
+    }
+
+    // Stepper Logic
+    const step = ref(1);
+    const items = ref(['Offerte Opstellen', 'Klant Gegevens', 'Afronden'])
+
+    function onNextStep(){
+      step.value = step.value + 1;
+
+      if(step.value === 3){
+        saveQuotation();
+      }
+    }
+    function onPrevStep(){
+      step.value = step.value - 1;
+    }
+
+    function sendEmail(){
+      console.log("sendEmail");
+    }
+
 </script>
 
 <template>
 
-    <h3>Offerte #{{ quotation.id }}</h3>
+    <h3>Offerte Aanmaken</h3>
     <v-stepper
         prev-text="Previous"
         next-text="Next"
-        editable
-        :items="['Offerte Opstellen', 'Klant Gegevens', 'Afronden']"
+        v-model="step"
+        :items="items"
+        hide-actions
     >
         <template v-slot:item.1>
             <div class="stepper-item-panel">
@@ -118,9 +147,8 @@
         <template v-slot:item.2 class="stepper-item-panel">
             <div class="stepper-item-panel">
                 <v-row>
-                  <CustomerDetails />
                     <v-col cols="auto">
-
+                      <CustomerDetails :quotation />
                     </v-col>
                 </v-row>
             </div>
@@ -136,15 +164,22 @@
                         Overzicht offerte met totaal prijs
                     </v-col>
                 </v-row>
-              <v-row>
-                <v-col cols="auto">
-
-                  <ExportPdf />
-
-                </v-col>
-              </v-row>
+                <v-row justify="end" class="w-100">
+                  <v-col cols="auto">
+                    <ExportPdf />
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn color="primary" @click="sendEmail">
+                      Verstuur email
+                    </v-btn>
+                  </v-col>
+                </v-row>
             </div>
         </template>
+        <v-stepper-actions
+            @click:next="onNextStep"
+            @click:prev="onPrevStep"
+        ></v-stepper-actions>
     </v-stepper>
 
 </template>
