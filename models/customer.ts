@@ -1,21 +1,26 @@
-export default class Customer {
+export default class Customer{
+
     public id: number;
-    public firstname: string;
-    public surname: string;
-    public email: string;
-    public phone: string | null;
+    public name: string;
+    public address: string;
+    public city: string;
+    public state: string;
+    public zip: string;
 
     constructor(
         id: number,
-        firstname: string,
-        surname: string,
-        email: string,
-        phone: string | null
-    ) {
+        name: string,
+        address: string,
+        city: string,
+        state: string,
+        zip: string
+    ){
         this.id = id;
-        this.firstname = firstname;
-        this.surname = surname;
-        this.email = email;
-        this.phone = phone;
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
     }
+
 }
