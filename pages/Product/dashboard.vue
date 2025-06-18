@@ -68,7 +68,7 @@
         </template>
 
         <template #item.actions="{ item }">
-          <v-btn size="small" color="primary" :to="`/Product/Edit/manage/${item.id}`">
+          <v-btn size="small" color="primary" :to="`/Product/manage/${item.id}`">
             ✏️ Bewerken
           </v-btn>
           <v-btn size="small" color="error" @click="deleteProduct(item.id)">
