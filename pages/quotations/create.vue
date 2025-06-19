@@ -113,13 +113,6 @@
       step.value = step.value - 1;
     }
 
-    function sendEmail(){
-      console.log("sendEmail");
-    }
-
-
-
-
     const exportToPDF = () => {
       const element = document.getElementById('quotation-pdf');
       if (!element) return;
@@ -130,7 +123,7 @@
           html2pdf.default()
               .set({
                 margin: 0.5,
-                filename: 'offerte.pdf',
+                filename: `${quotation.value.customer.firstname} ${quotation.value.customer.surname} offerte.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
@@ -187,13 +180,11 @@
             <div class="stepper-item-panel">
                 <v-row>
                     <v-col>
-                        Afronden
-                    </v-col>
-                    <v-col cols="auto">
-                        Overzicht offerte met totaal prijs
+                      <h3>Afronden</h3>
+                      <h5>Overzicht offerte met totaal prijs</h5>
                     </v-col>
                 </v-row>
-                <v-row justify="end" class="w-100">
+                <v-row justify="middle" class="w-100">
                   <v-col cols="auto">
                     <div>
                       <v-btn @click="exportToPDF">📄 Exporteer als PDF</v-btn>
@@ -202,13 +193,19 @@
                       <div
                           id="quotation-pdf"
                       >
-                        <h1>Offerte</h1>
+                        <img
+                            src="/public/assets/images/logo.png"
+                            alt="Logo"
+                            style="position: absolute; top: 0; right: 0; width: 150px; z-index: 0;"
+                        />
+                        <h1>Travel Planner</h1>
+                        <h2>Offerte</h2>
                         <p><strong>Klant:</strong> {{ quotation.customer.firstname }} {{ quotation.customer.surname }}</p>
                         <p><strong>Email:</strong> {{ quotation.customer.email }}</p>
 
-                        <h2>Producten</h2>
+                        <h3>Producten</h3>
                         <div v-for="(item, index) in quotation.items" :key="index" style="margin-bottom: 1rem;">
-                          <h3>{{ item.product.name }}</h3>
+                          <h4>{{ item.product.name }}</h4>
                           <p><strong>Type:</strong> {{ item.product.type.name }}</p>
                           <p><strong>Beschrijving:</strong> {{ item.product.description || 'Geen beschrijving' }}</p>
                           <p><strong>Prijs:</strong> €{{ item.productDate.price }}</p>
@@ -219,11 +216,6 @@
                         <h2>Totaalprijs: €{{ quotation.totalPrice }}</h2>
                       </div>
                     </div>
-                  </v-col>
-                  <v-col cols="auto">
-                    <v-btn color="primary" @click="sendEmail">
-                      Verstuur email
-                    </v-btn>
                   </v-col>
                 </v-row>
             </div>
